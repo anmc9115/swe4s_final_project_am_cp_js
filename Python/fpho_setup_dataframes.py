@@ -16,7 +16,7 @@ import pandas as pd
 driver_version = 'v2.0'
 
 
-def import_fpho_data(file_name):
+def import_fpho_data(input_filename,output_filename):
     """Takes a file name, return a dataframe of parsed data
 
         Parameters
@@ -127,12 +127,12 @@ def import_fpho_data(file_name):
 
     # Open file, catch errors
     try:
-        file = open(file_name, 'r')
+        file = open(input_filename, 'r')
     except FileNotFoundError:
-        print("Could not find file: " + file_name)
+        print("Could not find file: " + input_filename)
         sys.exit(1)
     except PermissionError:
-        print("Could not access file: " + file_name)
+        print("Could not access file: " + input_filename)
         sys.exit(2)
 
     for line in file:
