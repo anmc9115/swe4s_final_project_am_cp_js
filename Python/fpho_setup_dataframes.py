@@ -41,13 +41,16 @@ def import_fpho_data(input_filename, output_filename):
         """
 
     # User questions to specify type of information in columns of input data
-    fiber_val = int(input("One fiber or two fiber input data?\nPlease enter 1 if one fiber or 2 if two fiber:\n"))
+    fiber_val = int(input("One fiber or two fiber input data?\n"
+                          + "Please enter 1 if one fiber "
+                          + "or 2 if two fiber:\n"))
     while fiber_val not in [1, 2]:
         print("Your input for the # of fibers in input data was invalid.\n"
               + "Please enter either 1 or 2 as an integer.")
         sys.exit(1)
 
-    f1Red_col = int(input("Which column contains f1Red information?\nPlease enter 3 or 4 as an integer:\n"))
+    f1Red_col = int(input("Which column contains f1Red information?\n"
+                          + "Please enter 3 or 4 as an integer:\n"))
     while f1Red_col not in [3, 4]:
         print("Your input", f1Red_col, "is invalid.\n",
               "Please enter either 3 or 4, or 'x' to exit.\n")
@@ -59,7 +62,9 @@ def import_fpho_data(input_filename, output_filename):
     if f1Red_col == 3:
         f1Green_col = 4
         while True:
-            answer = input("You indicated that column 3 contains F1 red and column 4 contains F1 green. Is this correct (yes or no)?\n")
+            answer = input("You indicated that column 3 contains F1 red"
+                           + " and column 4 contains F1 green. "
+                           + "Is this correct (yes or no)?\n")
             if answer.lower().startswith("y"):
                 print("ok, carry on then\n")
                 break
@@ -69,7 +74,9 @@ def import_fpho_data(input_filename, output_filename):
     else:
         f1Green_col = 3
         while True:
-            answer = input("You indicated that column 3 contains F1 green and column 4 contains F1 red. Is this correct (yes or no)?\n")
+            answer = input("You indicated that column 3 contains F1 green"
+                           + " and column 4 contains F1 red. "
+                           + "Is this correct (yes or no)?\n")
             if answer.lower().startswith("y"):
                 print("ok, carry on then\n")
                 break
@@ -78,18 +85,22 @@ def import_fpho_data(input_filename, output_filename):
                 exit()
 
     if fiber_val == 2:
-        f2Red_col = int(input("Which column contains f2Red information?\nPlease enter 5 or 6 as an integer:\n"))
+        f2Red_col = int(input("Which column contains f2Red information?\n"
+                              + "Please enter 5 or 6 as an integer:\n"))
         while f2Red_col not in [4, 5]:
             print("Your input", f2Red_col,
                   "is invalid.\nPlease enter either 5 or 6, or 'x' to exit.\n")
-            f2Red_col = input("Which column contains f2Red information?\nPlease enter 5 or 6 as an integer:\n")
+            f2Red_col = input("Which column contains f2Red information?\n"
+                              + "Please enter 5 or 6 as an integer:\n")
             if f2Red_col == 'x':
                 exit()
 
         if f2Red_col == 5:
             f2Green_col = 6
             while True:
-                answer = input("You indicated that column 5 contains F2 red and column 6 contains F2 green. Is this correct (yes or no)?\n")
+                answer = input("You indicated that column 5 contains F2 red "
+                               + "and column 6 contains F2 green. "
+                               + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
                     print("ok, carry on then\n")
                     break
@@ -99,7 +110,9 @@ def import_fpho_data(input_filename, output_filename):
         else:
             f2Green_col = 5
             while True:
-                answer = input("You indicated that column 5 contains F2 green and column 6 contains F2 red. Is this correct (yes or no)?\n")
+                answer = input("You indicated that column 5 contains F2 green "
+                               + "and column 6 contains F2 red. "
+                               + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
                     print("ok, carry on then\n")
                     break
@@ -213,8 +226,5 @@ def import_fpho_data(input_filename, output_filename):
                                        'fTimeIso': fTimeIso,
                                        'fTimeRed': fTimeRed,
                                        'fTimeGreen': fTimeGreen})
-        onefiber_fdata.to_csv(output_filename,index=False)
+        onefiber_fdata.to_csv(output_filename, index=False)
         return onefiber_fdata
-        
-
-    
