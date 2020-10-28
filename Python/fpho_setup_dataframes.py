@@ -9,15 +9,18 @@
 
 """
 
+# Claire to-do: Add warning message when columns are different lengths
+
 import sys
 from statistics import mean
 import pandas as pd
+import numpy as np
 
 driver_version = 'v2.0'
 
 
 def import_fpho_data(input_filename, output_filename):
-    """Takes a file name, return a dataframe of parsed data
+    """Takes a file name, returns a dataframe of parsed data
 
         Parameters
         ----------
@@ -153,31 +156,34 @@ def import_fpho_data(input_filename, output_filename):
     f2Green = f2Green[250:]
     f2Red = f2Red[250:]
     fTime = fTime[250:]
-    # print(len(f1Green),len(f1Red),len(f2Green), len(f2Red), len(fTime))
+    # print('starts',len(f1Green),len(f1Red),len(f2Green), len(f2Red), len(fTime)) 
+    # Same Length
 
     # De-interleave
     offset1 = f1Green[0::3]  # takes every 3rd element
     offset2 = f1Green[1::3]
     offset3 = f1Green[2::3]
     meanoffsets = [mean(offset1), mean(offset2), mean(offset3)]
-    # print(meanoffsets)
 
     # Green has highest signal (GcAMP)
     # Order: green(470), red(560), iso(415)
     greenIdX = meanoffsets.index(max(meanoffsets))
     redIdX = greenIdX+1
     isoIdX = greenIdX+2
+    # print('Idx',greenIdX,redIdX,isoIdX)
 
     # Assigning correct rows to colors
     # First fiber, green
     f1GreenIso = f1Green[greenIdX::3]
     f1GreenRed = f1Green[redIdX::3]
     f1GreenGreen = f1Green[isoIdX::3]
+    # print('green',len(f1GreenIso),len(f1GreenRed),len(f1GreenGreen))
 
     # First fiber, red
     f1RedIso = f1Red[greenIdX::3]
     f1RedRed = f1Red[redIdX::3]
     f1RedGreen = f1Red[isoIdX::3]
+    # print('red',len(f1RedIso),len(f1RedRed),len(f1RedGreen))
 
     # Sorting time by color
     fTimeIso = fTime[greenIdX::3]
@@ -198,33 +204,35 @@ def import_fpho_data(input_filename, output_filename):
         # TO DO: Make dataframe holding each of these (pandas time)
         # File name as big header
 
-        twofiber_fdata = pd.DataFrame({'f1GreenIso': f1GreenIso,
-                                       'f1GreenRed': f1GreenRed,
-                                       'f1GreenGreen': f1GreenGreen,
-                                       'f2GreenIso': f2GreenIso,
-                                       'f2GreenRed': f2GreenRed,
-                                       'f2GreenGreen': f2GreenGreen,
-                                       'f1RedIso': f1RedIso,
-                                       'f1RedRed': f1RedRed,
-                                       'f1RedGreen': f1RedGreen,
-                                       'f2RedIso': f2RedIso,
-                                       'f2RedRed': f2RedRed,
-                                       'f2RedGreen': f2RedGreen,
-                                       'fTimeIso': fTimeIso,
-                                       'fTimeRed': fTimeRed,
-                                       'fTimeGreen': fTimeGreen})
+        twofiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
+                                       'f1GreenRed': pd.Series(f1GreenRed),
+                                       'f1GreenGreen': pd.Series(f1GreenGreen),
+                                       'f2GreenIso': pd.Series(f2GreenIso),
+                                       'f2GreenRed': pd.Series(f2GreenRed),
+                                       'f2GreenGreen': pd.Series(f2GreenGreen),
+                                       'f1RedIso': pd.Series(f1RedIso),
+                                       'f1RedRed': pd.Series(f1RedRed),
+                                       'f1RedGreen': pd.Series(f1RedGreen),
+                                       'f2RedIso': pd.Series(f2RedIso),
+                                       'f2RedRed': pd.Series(f2RedRed),
+                                       'f2RedGreen': pd.Series(f2RedGreen),
+                                       'fTimeIso': pd.Series(fTimeIso),
+                                       'fTimeRed': pd.Series(fTimeRed),
+                                       'fTimeGreen': pd.Series(fTimeGreen)})
+
         twofiber_fdata.to_csv(output_filename, index=False)
         return twofiber_fdata
 
     else:
-        onefiber_fdata = pd.DataFrame({'f1GreenIso': f1GreenIso,
-                                       'f1GreenRed': f1GreenRed,
-                                       'f1GreenGreen': f1GreenGreen,
-                                       'f1RedIso': f1RedIso,
-                                       'f1RedRed': f1RedRed,
-                                       'f1RedGreen': f1RedGreen,
-                                       'fTimeIso': fTimeIso,
-                                       'fTimeRed': fTimeRed,
-                                       'fTimeGreen': fTimeGreen})
-        onefiber_fdata.to_csv(output_filename, index=False)
+        onefiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
+                                       'f1GreenRed': pd.Series(f1GreenRed),
+                                       'f1GreenGreen': pd.Series(f1GreenGreen),
+                                       'f1RedIso': pd.Series(f1RedIso),
+                                       'f1RedRed': pd.Series(f1RedRed),
+                                       'f1RedGreen': pd.Series(f1RedGreen),
+                                       'fTimeIso': pd.Series(fTimeIso),
+                                       'fTimeRed': pd.Series(fTimeRed),
+                                       'fTimeGreen': pd.Series(fTimeGreen)})
+       
+        onefiber_fdata.to_csv(output_filename, index=False, na_rep = '')
         return onefiber_fdata
