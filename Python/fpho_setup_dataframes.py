@@ -236,3 +236,35 @@ def import_fpho_data(input_filename, output_filename):
        
         onefiber_fdata.to_csv(output_filename, index=False, na_rep = '')
         return onefiber_fdata
+
+
+def make_summary_file(animal_num, date, exp):
+
+    """Creates a file that holds important information
+
+        Parameters
+        ----------
+        animal_num: integer
+                Number of the animal
+        date: string
+                Date of the experiment
+        exp: string
+                Brief description of experiment
+
+        Returns:
+        --------
+        summary_info: text file
+            file containing: version, animal_num, date, exp,
+    """
+    
+    # metadata_df = pd.DataFrame({'animal_IDnum': animal_num,
+    #                             'experiment_description': exp,
+    #                             'experiment_date': date}, 
+    #                             index=[0])    
+    info = {'Description': ['Animal ID number','Date','Experiment description'],
+            'Data': [animal_num,date,exp]}
+
+    metadata_df = pd.DataFrame(info) 
+
+    return metadata_df
+
