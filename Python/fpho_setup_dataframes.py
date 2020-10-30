@@ -239,7 +239,7 @@ def import_fpho_data(input_filename, output_filename):
         return onefiber_fdata
 
 
-def make_summary_file(animal_num, date, exp):
+def make_summary_file(animal_num, date, exp, summarycsv_name):
 
     """Creates a file that holds important information
 
@@ -266,6 +266,8 @@ def make_summary_file(animal_num, date, exp):
             'Data': [animal_num,date,exp]}
 
     metadata_df = pd.DataFrame(info) 
+    metadata_df.to_csv(summarycsv_name, index=False)
+
     return metadata_df
 
 
