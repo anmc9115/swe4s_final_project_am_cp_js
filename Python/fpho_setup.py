@@ -132,7 +132,7 @@ def import_fpho_data(file_name): # USER INPUTS
     return onefiber_fdata
 
 
-def make_summary_file(animal_num, date, exp):
+def make_summary_file(data_frame, output_filename):
     """Creates a file that holds important information
 
         Parameters
