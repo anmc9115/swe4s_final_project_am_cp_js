@@ -15,6 +15,7 @@ import sys
 from statistics import mean
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 driver_version = 'v2.0'
 
@@ -265,6 +266,50 @@ def make_summary_file(animal_num, date, exp):
             'Data': [animal_num,date,exp]}
 
     metadata_df = pd.DataFrame(info) 
-
     return metadata_df
 
+
+def raw_signal_trace(fpho_dataframe): 
+
+    print(fpho_dataframe.head(5))
+    df = fpho_dataframe
+
+    rTime_idx = df.columns.get_loc("fTimeRed")
+    gTime_idx = df.columns.get_loc("fTimeGreen")
+    
+    f1Red_idx = df.columns.get_loc("f1RedRed")
+    # f2Red_idx = df.columns.get_loc("f2RedRed")
+
+    f1Green_idx = df.columns.get_loc("f1GreenGreen")
+    # f2Green_idx = df.columns.get_loc("f2GreenGreen")
+
+    print(df.iloc[: , rTime_idx])
+    plt.figure()
+
+    plt.subplot(221)
+    plt.plot(df.iloc[: , rTime_idx], df.iloc[: , f1Red_idx])
+    plt.title("f1RedRed")
+
+    
+    plt.subplot(222)
+    plt.plot(df.iloc[: , rTime_idx], df.iloc[: , f1Green_idx])
+    plt.title("f1GreenGreen")
+
+    plt.show()
+
+
+    # channels2normalize = input("Which channels would you like to normalize?\n")
+    # print(channels2normalize)
+
+    # normtype = input("What type of normalization? For isosbestic enter 1, for fitted exp enter 2.\n")
+    # print(normtype)
+
+    # plot each signal
+    # 1. green in f1Green
+    # 2. red in f1Red
+    # 3. green in f2Green
+    # 4. red in f2Red
+
+    # outputs fitted exp graph, returns normalized data (append to dataframe)
+    # ask user which channels to normalize and how (iso vs fitted exp)
+    # could add all for now and change later
