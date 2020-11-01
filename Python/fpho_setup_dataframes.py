@@ -16,6 +16,7 @@ from statistics import mean
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 
 driver_version = 'v2.0'
 
@@ -45,32 +46,53 @@ def import_fpho_data(input_filename, output_filename):
         """
 
     # User questions to specify type of information in columns of input data
-    fiber_val = int(input("One fiber or two fiber input data?\n"
-                          + "Please enter 1 if one fiber "
-                          + "or 2 if two fiber:\n"))
-    while fiber_val not in [1, 2]:
-        print("Your input for the # of fibers in input data was invalid.\n"
-              + "Please enter either 1 or 2 as an integer.")
+
+    # User input to indicate one fiber or two fiber data
+    fiber_val = input("\nOne fiber or two fiber input data?\n"
+                      + "Please enter <1> if one fiber data "
+                      + "or <2> if two fiber data: ")
+
+    try:
+        fiber_val = int(fiber_val)
+    except ValueError:
+        print("Error: Invalid input."
+              + "Please restart and use integer input to indicate "
+              + "number of fibers represented in input data.\n")
         sys.exit(1)
 
-    f1Red_col = int(input("Which column contains f1Red information?\n"
-                          + "Please enter 3 or 4 as an integer:\n"))
+    while fiber_val not in [1, 2]:
+        print("Error: Integer entered for number of "
+              + "fibers represented in dataset <"
+              + str(fiber_val) + "> was invalid."
+              + " Please enter <1> or <2> or press any letter to exit.")
+        fiber_val = input()
+        if type(fiber_val) != int:
+            sys.exit()
+
+    # User input to find out which column contains info for the f1Red channel
+    f1Red_col = input("\nWhich column contains f1Red information? "
+                      + "Please enter <3> or <4> indicating column index: ")
+    try:
+        f1Red_col = int(f1Red_col)
+    except ValueError:
+        print("Error: Column index not entered as integer. Restarting")
+
     while f1Red_col not in [3, 4]:
-        print("Your input", f1Red_col, "is invalid.\n",
-              "Please enter either 3 or 4, or 'x' to exit.\n")
-        f1Red_col = input("Which column contains f1Red information?\n",
-                          "Please enter 3 or 4 as an integer:\n")
-        if f1Red_col == 'x':
-            exit()
+        print("\nError: Your input <" + str(f1Red_col) + "> was invalid. "
+              + "Enter either <3> or <4> or press any letter to exit.\n")
+        f1Red_col = input("Which column contains f1Red information?\n"
+                          + "Enter <3> or <4>, or press any letter to exit: ")
+        if type(f1Red_col) != int:
+            sys.exit()
 
     if f1Red_col == 3:
         f1Green_col = 4
         while True:
-            answer = input("You indicated that column 3 contains F1 red"
-                           + " and column 4 contains F1 green. "
-                           + "Is this correct (yes or no)?\n")
+            answer = input("\nYou indicated that column 3 contains f1Red"
+                           + " and column 4 contains f1Green. "
+                           + "Is this correct (yes or no)? ")
             if answer.lower().startswith("y"):
-                print("ok, carry on then\n")
+                print("Moving forward...\n")
                 break
             elif answer.lower().startswith("n"):
                 print("You replied no. Restarting data information entry")
@@ -78,35 +100,36 @@ def import_fpho_data(input_filename, output_filename):
     else:
         f1Green_col = 3
         while True:
-            answer = input("You indicated that column 3 contains F1 green"
-                           + " and column 4 contains F1 red. "
+            answer = input("You indicated that column 3 contains f1Green"
+                           + " and column 4 contains f1Red. "
                            + "Is this correct (yes or no)?\n")
             if answer.lower().startswith("y"):
-                print("ok, carry on then\n")
+                print("Moving forward...\n")
                 break
             elif answer.lower().startswith("n"):
                 print("You replied no. Please restart")
-                exit()
+                sys.exit()
 
+    # Begin 2 fiber if statement to get 2 fiber column info
     if fiber_val == 2:
         f2Red_col = int(input("Which column contains f2Red information?\n"
-                              + "Please enter 5 or 6 as an integer:\n"))
+                              + "Please enter <5> or <6>:\n"))
         while f2Red_col not in [4, 5]:
             print("Your input", f2Red_col,
-                  "is invalid.\nPlease enter either 5 or 6, or 'x' to exit.\n")
+                  "is invalid.\nEnter either <5> or <6>, or 'x' to exit.\n")
             f2Red_col = input("Which column contains f2Red information?\n"
-                              + "Please enter 5 or 6 as an integer:\n")
+                              + "Please enter <5> or <6>:\n")
             if f2Red_col == 'x':
                 exit()
 
         if f2Red_col == 5:
             f2Green_col = 6
             while True:
-                answer = input("You indicated that column 5 contains F2 red "
-                               + "and column 6 contains F2 green. "
+                answer = input("You indicated that column 5 contains f1Red "
+                               + "and column 6 contains f1Green. "
                                + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
-                    print("ok, carry on then\n")
+                    print("Moving forward...\n")
                     break
                 elif answer.lower().startswith("n"):
                     print("You replied no. Please restart")
@@ -114,11 +137,11 @@ def import_fpho_data(input_filename, output_filename):
         else:
             f2Green_col = 5
             while True:
-                answer = input("You indicated that column 5 contains F2 green "
-                               + "and column 6 contains F2 red. "
+                answer = input("You indicated that column 5 contains f1Green "
+                               + "and column 6 contains f2Red. "
                                + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
-                    print("ok, carry on then\n")
+                    print("Moving forward...\n")
                     break
                 elif answer.lower().startswith("n"):
                     print("You replied no. Please restart")
@@ -157,7 +180,8 @@ def import_fpho_data(input_filename, output_filename):
     f2Green = f2Green[250:]
     f2Red = f2Red[250:]
     fTime = fTime[250:]
-    # print('starts',len(f1Green),len(f1Red),len(f2Green), len(f2Red), len(fTime)) 
+    # print('starts',len(f1Green),len(f1Red),
+    #       len(f2Green), len(f2Red), len(fTime))
     # Same Length
 
     # De-interleave
@@ -222,6 +246,7 @@ def import_fpho_data(input_filename, output_filename):
                                        'fTimeGreen': pd.Series(fTimeGreen)})
 
         twofiber_fdata.to_csv(output_filename, index=False)
+        print('Output CSV written to ' + output_filename)
         return twofiber_fdata
 
     else:
@@ -234,12 +259,13 @@ def import_fpho_data(input_filename, output_filename):
                                        'fTimeIso': pd.Series(fTimeIso),
                                        'fTimeRed': pd.Series(fTimeRed),
                                        'fTimeGreen': pd.Series(fTimeGreen)})
-       
-        onefiber_fdata.to_csv(output_filename, index=False, na_rep = '')
+
+        onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
+        print('Output CSV written to ' + output_filename)
         return onefiber_fdata
 
 
-def make_summary_file(animal_num, date, exp, summarycsv_name):
+def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
 
     """Creates a file that holds important information
 
@@ -257,61 +283,91 @@ def make_summary_file(animal_num, date, exp, summarycsv_name):
         summary_info: text file
             file containing: version, animal_num, date, exp,
     """
-    
+
     # metadata_df = pd.DataFrame({'animal_IDnum': animal_num,
     #                             'experiment_description': exp,
-    #                             'experiment_date': date}, 
-    #                             index=[0])    
-    info = {'Description': ['Animal ID number','Date','Experiment description'],
-            'Data': [animal_num,date,exp]}
+    #                             'experiment_date': date},
+    #                             index=[0])
 
-    metadata_df = pd.DataFrame(info) 
+    try:
+        datetime.datetime.strptime(exp_yyyy_mm_dd, '%Y-%m-%d')
+    except ValueError:
+        print('Date {'+exp_yyyy_mm_dd+'} not entered in correct format.'
+              + ' Please re-enter in YYYY-MM-DD format.')
+        # raise ValueError
+        sys.exit(1)  # Change this to raise value error when using driver file?
+
+    info = {'Description': ['Animal ID number', 'Date', 'Brief description'],
+            'Data': [animal_num, exp_yyyy_mm_dd, exp_desc]}
+
+    metadata_df = pd.DataFrame(info)
     metadata_df.to_csv(summarycsv_name, index=False)
 
     return metadata_df
 
 
-def raw_signal_trace(fpho_dataframe): 
+def raw_signal_trace(fpho_dataframe):
 
-    print(fpho_dataframe.head(5))
     df = fpho_dataframe
+    # print(df.head(1))
 
-    rTime_idx = df.columns.get_loc("fTimeRed")
-    gTime_idx = df.columns.get_loc("fTimeGreen")
-    
-    f1Red_idx = df.columns.get_loc("f1RedRed")
-    # f2Red_idx = df.columns.get_loc("f2RedRed")
+    # Get user input for what to plot
+    channel_input = input("----------\n"
+                          + "What channel(s) would you like to plot?\n"
+                          + "\nOptions are f1Red, f2Red, f1Green, f2Green."
+                          + "\n\nIf plotting multiple channels,"
+                          + " please separate with a space or comma."
+                          + "\n----------\n"
+                          + "Selection: ")
 
-    f1Green_idx = df.columns.get_loc("f1GreenGreen")
-    # f2Green_idx = df.columns.get_loc("f2GreenGreen")
+    # Make a list of user input
+    if ',' in channel_input:
+        channel_list = channel_input.split(',')
+    else:
+        channel_list = channel_input.split(' ')
 
-    print(df.iloc[: , rTime_idx])
-    plt.figure()
+    # quick for loop to catch input error -- input not found in column names
+    for channel in channel_list:
+        col = df.columns.str.contains(pat=str(channel))
+        if not any(col):
+            print("Could not find entries for channels you'd like to plot"
+                  + " in the dataframe column names."
+                  + " You entered <" + channel + "> and the options are "
+                  + str(list(df.columns)))
+            print('Please restart...\n')
+            sys.exit(1)
 
-    plt.subplot(221)
-    plt.plot(df.iloc[: , rTime_idx], df.iloc[: , f1Red_idx])
-    plt.title("f1RedRed")
+    # Replace user input with actual column name
+    for channel in channel_list:
 
-    
-    plt.subplot(222)
-    plt.plot(df.iloc[: , rTime_idx], df.iloc[: , f1Green_idx])
-    plt.title("f1GreenGreen")
+        if 'f1Red' in str(channel):
+            title = channel
+            channel = "f1RedRed"
+            time_col = 'fTimeRed'
+            l_color = "r"
+        if 'f2Red' in str(channel):
+            title = channel
+            channel = "f2RedRed"
+            time_col = 'fTimeRed'
+            l_color = "r"
+        if 'f1Green' in str(channel):
+            title = channel
+            channel = "f1GreenGreen"
+            time_col = 'fTimeGreen'
+            l_color = "g"
+        if 'f2Green' in str(channel):
+            title = channel
+            channel = "f2GreenGreen"
+            time_col = 'fTimeGreen'
+            l_color = "g"
 
+        channel_idx = df.columns.get_loc(channel)
+        time_idx = df.columns.get_loc(time_col)
+
+        plt.figure()
+        plt.plot(df.iloc[:, time_idx], df.iloc[:, channel_idx], color=l_color)
+        plt.title(str(title))
+
+    print('\nClose plot window(s) to end script.')
     plt.show()
-
-
-    # channels2normalize = input("Which channels would you like to normalize?\n")
-    # print(channels2normalize)
-
-    # normtype = input("What type of normalization? For isosbestic enter 1, for fitted exp enter 2.\n")
-    # print(normtype)
-
-    # plot each signal
-    # 1. green in f1Green
-    # 2. red in f1Red
-    # 3. green in f2Green
-    # 4. red in f2Red
-
-    # outputs fitted exp graph, returns normalized data (append to dataframe)
-    # ask user which channels to normalize and how (iso vs fitted exp)
-    # could add all for now and change later
+    return None
