@@ -15,6 +15,7 @@ import sys
 from statistics import mean
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 driver_version = 'v2.0'
 
@@ -236,3 +237,81 @@ def import_fpho_data(input_filename, output_filename):
        
         onefiber_fdata.to_csv(output_filename, index=False, na_rep = '')
         return onefiber_fdata
+
+
+def make_summary_file(animal_num, date, exp, summarycsv_name):
+
+    """Creates a file that holds important information
+
+        Parameters
+        ----------
+        animal_num: integer
+                Number of the animal
+        date: string
+                Date of the experiment
+        exp: string
+                Brief description of experiment
+
+        Returns:
+        --------
+        summary_info: text file
+            file containing: version, animal_num, date, exp,
+    """
+    
+    # metadata_df = pd.DataFrame({'animal_IDnum': animal_num,
+    #                             'experiment_description': exp,
+    #                             'experiment_date': date}, 
+    #                             index=[0])    
+    info = {'Description': ['Animal ID number','Date','Experiment description'],
+            'Data': [animal_num,date,exp]}
+
+    metadata_df = pd.DataFrame(info) 
+    metadata_df.to_csv(summarycsv_name, index=False)
+
+    return metadata_df
+
+
+def raw_signal_trace(fpho_dataframe): 
+
+    print(fpho_dataframe.head(5))
+    df = fpho_dataframe
+
+    rTime_idx = df.columns.get_loc("fTimeRed")
+    gTime_idx = df.columns.get_loc("fTimeGreen")
+    
+    f1Red_idx = df.columns.get_loc("f1RedRed")
+    # f2Red_idx = df.columns.get_loc("f2RedRed")
+
+    f1Green_idx = df.columns.get_loc("f1GreenGreen")
+    # f2Green_idx = df.columns.get_loc("f2GreenGreen")
+
+    print(df.iloc[: , rTime_idx])
+    plt.figure()
+
+    plt.subplot(221)
+    plt.plot(df.iloc[: , rTime_idx], df.iloc[: , f1Red_idx])
+    plt.title("f1RedRed")
+
+    
+    plt.subplot(222)
+    plt.plot(df.iloc[: , rTime_idx], df.iloc[: , f1Green_idx])
+    plt.title("f1GreenGreen")
+
+    plt.show()
+
+
+    # channels2normalize = input("Which channels would you like to normalize?\n")
+    # print(channels2normalize)
+
+    # normtype = input("What type of normalization? For isosbestic enter 1, for fitted exp enter 2.\n")
+    # print(normtype)
+
+    # plot each signal
+    # 1. green in f1Green
+    # 2. red in f1Red
+    # 3. green in f2Green
+    # 4. red in f2Red
+
+    # outputs fitted exp graph, returns normalized data (append to dataframe)
+    # ask user which channels to normalize and how (iso vs fitted exp)
+    # could add all for now and change later
