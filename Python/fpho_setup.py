@@ -8,21 +8,26 @@
     * plot_2fiber_norm_iso - PLots 2 fiber normalized isosbestic fit
 
 """
+
+# Claire to-do: Add warning message when columns are different lengths
+
 import sys
 from statistics import mean
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import datetime
 
 driver_version = 'v2.0'
 
-# Variable for what fiber1 is (animal_num, side of brain, etc)
-# Variable for what fiber2 is (animal_num, side of brain, etc)
-def import_fpho_data(file_name): # USER INPUTS
-    """Takes a file name, returns lists of parsed data
+
+def import_fpho_data(input_filename, output_filename):
+    """Takes a file name, returns a dataframe of parsed data
 
         Parameters
         ----------
         file_name: string
-                The path to the CSV file
+                   The path to the CSV file
 
         Returns:
         --------
@@ -39,43 +44,145 @@ def import_fpho_data(file_name): # USER INPUTS
                            fTimeIso, fTimeRed, fTimeGreen
                 name depcits fiber number, channel, color
         """
-    # Open file, catch errors
+
+    # User questions to specify type of information in columns of input data
+
+    # User input to indicate one fiber or two fiber data
+    fiber_val = input("\nOne fiber or two fiber input data?\n"
+                      + "Please enter <1> if one fiber data "
+                      + "or <2> if two fiber data: ")
+
     try:
-        file = open(file_name, 'r')
-    except FileNotFoundError:
-        print("Could not find file: " + file_name)
+        fiber_val = int(fiber_val)
+    except ValueError:
+        print("Error: Invalid input."
+              + "Please restart and use integer input to indicate "
+              + "number of fibers represented in input data.\n")
         sys.exit(1)
-    except PermissionError:
-        print("Could not access file: " + file_name)
-        sys.exit(2)
+
+    while fiber_val not in [1, 2]:
+        print("Error: Integer entered for number of "
+              + "fibers represented in dataset <"
+              + str(fiber_val) + "> was invalid."
+              + " Please enter <1> or <2> or press any letter to exit.")
+        fiber_val = input()
+        if type(fiber_val) != int:
+            sys.exit()
+
+    # User input to find out which column contains info for the f1Red channel
+    f1Red_col = input("\nWhich column contains f1Red information? "
+                      + "Please enter <3> or <4> indicating column index: ")
+    try:
+        f1Red_col = int(f1Red_col)
+    except ValueError:
+        print("Error: Column index not entered as integer. Restarting")
+
+    while f1Red_col not in [3, 4]:
+        print("\nError: Your input <" + str(f1Red_col) + "> was invalid. "
+              + "Enter either <3> or <4> or press any letter to exit.\n")
+        f1Red_col = input("Which column contains f1Red information?\n"
+                          + "Enter <3> or <4>, or press any letter to exit: ")
+        if type(f1Red_col) != int:
+            sys.exit()
+
+    if f1Red_col == 3:
+        f1Green_col = 4
+        while True:
+            answer = input("\nYou indicated that column 3 contains f1Red"
+                           + " and column 4 contains f1Green. "
+                           + "Is this correct (yes or no)? ")
+            if answer.lower().startswith("y"):
+                print("Moving forward...\n")
+                break
+            elif answer.lower().startswith("n"):
+                print("You replied no. Restarting data information entry")
+                exit()
+    else:
+        f1Green_col = 3
+        while True:
+            answer = input("You indicated that column 3 contains f1Green"
+                           + " and column 4 contains f1Red. "
+                           + "Is this correct (yes or no)?\n")
+            if answer.lower().startswith("y"):
+                print("Moving forward...\n")
+                break
+            elif answer.lower().startswith("n"):
+                print("You replied no. Please restart")
+                sys.exit()
+
+    # Begin 2 fiber if statement to get 2 fiber column info
+    if fiber_val == 2:
+        f2Red_col = int(input("Which column contains f2Red information?\n"
+                              + "Please enter <5> or <6>:\n"))
+        while f2Red_col not in [4, 5]:
+            print("Your input", f2Red_col,
+                  "is invalid.\nEnter either <5> or <6>, or 'x' to exit.\n")
+            f2Red_col = input("Which column contains f2Red information?\n"
+                              + "Please enter <5> or <6>:\n")
+            if f2Red_col == 'x':
+                exit()
+
+        if f2Red_col == 5:
+            f2Green_col = 6
+            while True:
+                answer = input("You indicated that column 5 contains f1Red "
+                               + "and column 6 contains f1Green. "
+                               + "Is this correct (yes or no)?\n")
+                if answer.lower().startswith("y"):
+                    print("Moving forward...\n")
+                    break
+                elif answer.lower().startswith("n"):
+                    print("You replied no. Please restart")
+                    exit()
+        else:
+            f2Green_col = 5
+            while True:
+                answer = input("You indicated that column 5 contains f1Green "
+                               + "and column 6 contains f2Red. "
+                               + "Is this correct (yes or no)?\n")
+                if answer.lower().startswith("y"):
+                    print("Moving forward...\n")
+                    break
+                elif answer.lower().startswith("n"):
+                    print("You replied no. Please restart")
+                    exit()
 
     fTime = []
     f1Red = []
     f1Green = []
     f2Red = []
     f2Green = []
-    twoFiber = False
 
-    # TO DO: assignment is not the same every time!
-    # User input for the order in fData
+    # Open file, catch errors
+    try:
+        file = open(input_filename, 'r')
+    except FileNotFoundError:
+        print("Could not find file: " + input_filename)
+        sys.exit(1)
+    except PermissionError:
+        print("Could not access file: " + input_filename)
+        sys.exit(2)
+
     for line in file:
-        columns = line.rstrip().split(',')
+        columns = line.rstrip().split(' ')
         fTime.append(float(columns[0]))
-        f1Red.append(float(columns[2]))
-        f1Green.append(float(columns[3]))
-        if columns[4] and columns[5] is not None:
-            f2Red.append(float(columns[4]))
-            f2Green.append(float(columns[5]))
-            twoFiber = True
+        f1Red.append(float(columns[f1Red_col-1]))
+        f1Green.append(float(columns[f1Green_col-1]))
+        if fiber_val == 2:
+            f2Red.append(float(columns[f2Red_col-1]))
+            f2Green.append(float(columns[f2Green_col-1]))
 
     file.close()
-    
+
     # Trim first ~5sec from data
     f1Green = f1Green[250:]
     f1Red = f1Red[250:]
     f2Green = f2Green[250:]
     f2Red = f2Red[250:]
     fTime = fTime[250:]
+    # print('starts',len(f1Green),len(f1Red),
+    #       len(f2Green), len(f2Red), len(fTime))
+    # Same Length
 
     # De-interleave
     offset1 = f1Green[0::3]  # takes every 3rd element
@@ -88,24 +195,27 @@ def import_fpho_data(file_name): # USER INPUTS
     greenIdX = meanoffsets.index(max(meanoffsets))
     redIdX = greenIdX+1
     isoIdX = greenIdX+2
+    # print('Idx',greenIdX,redIdX,isoIdX)
 
     # Assigning correct rows to colors
     # First fiber, green
     f1GreenIso = f1Green[greenIdX::3]
     f1GreenRed = f1Green[redIdX::3]
     f1GreenGreen = f1Green[isoIdX::3]
+    # print('green',len(f1GreenIso),len(f1GreenRed),len(f1GreenGreen))
 
     # First fiber, red
     f1RedIso = f1Red[greenIdX::3]
     f1RedRed = f1Red[redIdX::3]
     f1RedGreen = f1Red[isoIdX::3]
+    # print('red',len(f1RedIso),len(f1RedRed),len(f1RedGreen))
 
     # Sorting time by color
     fTimeIso = fTime[greenIdX::3]
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
-    if twoFiber:
+    if fiber_val == 2:
         # Second fiber, green
         f2GreenIso = f2Green[greenIdX::3]
         f2GreenRed = f2Green[redIdX::3]
@@ -118,21 +228,45 @@ def import_fpho_data(file_name): # USER INPUTS
 
         # TO DO: Make dataframe holding each of these (pandas time)
         # File name as big header
-        twofiber_fdata = [f1GreenIso, f1GreenRed, f1GreenGreen,
-                          f2GreenIso, f2GreenRed, f2GreenGreen,
-                          f1RedIso, f1RedRed, f1RedGreen,
-                          f2RedIso, f2RedRed, f2RedGreen,
-                          fTimeIso, fTimeRed, fTimeGreen]
 
+        twofiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
+                                       'f1GreenRed': pd.Series(f1GreenRed),
+                                       'f1GreenGreen': pd.Series(f1GreenGreen),
+                                       'f2GreenIso': pd.Series(f2GreenIso),
+                                       'f2GreenRed': pd.Series(f2GreenRed),
+                                       'f2GreenGreen': pd.Series(f2GreenGreen),
+                                       'f1RedIso': pd.Series(f1RedIso),
+                                       'f1RedRed': pd.Series(f1RedRed),
+                                       'f1RedGreen': pd.Series(f1RedGreen),
+                                       'f2RedIso': pd.Series(f2RedIso),
+                                       'f2RedRed': pd.Series(f2RedRed),
+                                       'f2RedGreen': pd.Series(f2RedGreen),
+                                       'fTimeIso': pd.Series(fTimeIso),
+                                       'fTimeRed': pd.Series(fTimeRed),
+                                       'fTimeGreen': pd.Series(fTimeGreen)})
+
+        twofiber_fdata.to_csv(output_filename, index=False)
+        print('Output CSV written to ' + output_filename)
         return twofiber_fdata
 
-    onefiber_fdata = [f1GreenIso, f1GreenRed, f1GreenGreen,
-                      f1RedIso, f1RedRed, f1RedGreen,
-                      fTimeIso, fTimeRed, fTimeGreen]
-    return onefiber_fdata
+    else:
+        onefiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
+                                       'f1GreenRed': pd.Series(f1GreenRed),
+                                       'f1GreenGreen': pd.Series(f1GreenGreen),
+                                       'f1RedIso': pd.Series(f1RedIso),
+                                       'f1RedRed': pd.Series(f1RedRed),
+                                       'f1RedGreen': pd.Series(f1RedGreen),
+                                       'fTimeIso': pd.Series(fTimeIso),
+                                       'fTimeRed': pd.Series(fTimeRed),
+                                       'fTimeGreen': pd.Series(fTimeGreen)})
+
+        onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
+        print('Output CSV written to ' + output_filename)
+        return onefiber_fdata
 
 
-def make_summary_file(data_frame, output_filename):
+def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
+
     """Creates a file that holds important information
 
         Parameters
@@ -148,63 +282,92 @@ def make_summary_file(data_frame, output_filename):
         --------
         summary_info: text file
             file containing: version, animal_num, date, exp,
-        """
-    # their own row in the dataframe
+    """
+
+    # metadata_df = pd.DataFrame({'animal_IDnum': animal_num,
+    #                             'experiment_description': exp,
+    #                             'experiment_date': date},
+    #                             index=[0])
+
+    try:
+        datetime.datetime.strptime(exp_yyyy_mm_dd, '%Y-%m-%d')
+    except ValueError:
+        print('Date {'+exp_yyyy_mm_dd+'} not entered in correct format.'
+              + ' Please re-enter in YYYY-MM-DD format.')
+        # raise ValueError
+        sys.exit(1)  # Change this to raise value error when using driver file?
+
+    info = {'Description': ['Animal ID number', 'Date', 'Brief description'],
+            'Data': [animal_num, exp_yyyy_mm_dd, exp_desc]}
+
+    metadata_df = pd.DataFrame(info)
+    metadata_df.to_csv(summarycsv_name, index=False)
+
+    return metadata_df
 
 
-def raw_signal_trace() #argument: fdataframe
-    # plot each signal
-    # 1. green in f1Green
-    # 2. red in f1Red
-    # 3. green in f2Green
-    # 4. red in f2Red
+def raw_signal_trace(fpho_dataframe):
 
+    df = fpho_dataframe
+    # print(df.head(1))
 
-# outputs fitted exp graph, returns normalized data (append to dataframe)
-# ask user which channels to normalize and how (iso vs fitted exp)
-# could add all for now and change later
-def plot_fitted_exp(fData):
-    """Plots fiberpho signal normalized to fitted exponent
+    # Get user input for what to plot
+    channel_input = input("----------\n"
+                          + "What channel(s) would you like to plot?\n"
+                          + "\nOptions are f1Red, f2Red, f1Green, f2Green."
+                          + "\n\nIf plotting multiple channels,"
+                          + " please separate with a space or comma."
+                          + "\n----------\n"
+                          + "Selection: ")
 
-        Parameters
-        ----------
-        fData: dataframe        
+    # Make a list of user input
+    if ',' in channel_input:
+        channel_list = channel_input.split(',')
+    else:
+        channel_list = channel_input.split(' ')
 
-        Returns:
-        --------
-        norm_fitted_exp: plot
-                A plot of fitted signal
-        """
-    # 4 graphs, 1 for each channel
-    # Each graph:
-        # 1. smoothed signal smooth(raw_trace)
-        # 2. fitted exp
-        # this is a santiy check!
-    # Return normalized 
+    # quick for loop to catch input error -- input not found in column names
+    for channel in channel_list:
+        col = df.columns.str.contains(pat=str(channel))
+        if not any(col):
+            print("Could not find entries for channels you'd like to plot"
+                  + " in the dataframe column names."
+                  + " You entered <" + channel + "> and the options are "
+                  + str(list(df.columns)))
+            print('Please restart...\n')
+            sys.exit(1)
 
-def plot_norm_iso():
-    """Plots fiberpho signal normalized to isosbestic
+    # Replace user input with actual column name
+    for channel in channel_list:
 
-        Parameters
-        ----------
-        fTime: float list
-                A list containing time of the day in msec
-        f1Red: float list
-                A list containing red fluorescent values from fiber
-        f1Green: float list
-                A list containing green fluorescent values from fiber
+        if 'f1Red' in str(channel):
+            title = channel
+            channel = "f1RedRed"
+            time_col = 'fTimeRed'
+            l_color = "r"
+        if 'f2Red' in str(channel):
+            title = channel
+            channel = "f2RedRed"
+            time_col = 'fTimeRed'
+            l_color = "r"
+        if 'f1Green' in str(channel):
+            title = channel
+            channel = "f1GreenGreen"
+            time_col = 'fTimeGreen'
+            l_color = "g"
+        if 'f2Green' in str(channel):
+            title = channel
+            channel = "f2GreenGreen"
+            time_col = 'fTimeGreen'
+            l_color = "g"
 
-        Returns:
-        --------
-        norm_iso: plot
-                A plot of normalized signal
-        """
-    # 4 graphs, 1 for each channel
-    # Each graph:
-        # 1. smoothed signal smooth(raw_trace)
-        # 2. fitted iso
+        channel_idx = df.columns.get_loc(channel)
+        time_idx = df.columns.get_loc(time_col)
 
+        plt.figure()
+        plt.plot(df.iloc[:, time_idx], df.iloc[:, channel_idx], color=l_color)
+        plt.title(str(title))
 
-# TEST DELETE
-fData = import_fpho_data('Data/2FiberSignal.csv')
-plot_2fiber_norm_fitted(fData)
+    print('\nClose plot window(s) to end script.')
+    plt.show()
+    return None
