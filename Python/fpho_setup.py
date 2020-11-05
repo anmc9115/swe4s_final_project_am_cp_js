@@ -306,7 +306,7 @@ def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
     return metadata_df
 
 
-def raw_signal_trace(fpho_dataframe):
+def raw_signal_trace(fpho_dataframe, output_filename):
 
     df = fpho_dataframe
     # print(df.head(1))
@@ -368,6 +368,6 @@ def raw_signal_trace(fpho_dataframe):
         plt.plot(df.iloc[:, time_idx], df.iloc[:, channel_idx], color=l_color)
         plt.title(str(title))
 
-    print('\nClose plot window(s) to end script.')
-    plt.show()
-    return None
+    raw_sig_file_name = output_filename + '_rawsig.png'
+    plt.savefig(raw_sig_file_name, bbox_inches='tight')
+
