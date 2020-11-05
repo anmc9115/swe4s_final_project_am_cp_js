@@ -368,6 +368,7 @@ def raw_signal_trace(fpho_dataframe, output_filename):
         plt.plot(df.iloc[:, time_idx], df.iloc[:, channel_idx], color=l_color)
         plt.title(str(title))
 
-    raw_sig_file_name = output_filename + '_rawsig.png'
-    plt.savefig(raw_sig_file_name, bbox_inches='tight')
+        # outputs raw sig plot as png file 
+        raw_sig_file_name = output_filename + '_' + channel + '_rawsig.png'
+        plt.savefig(raw_sig_file_name, bbox_inches='tight')
 
