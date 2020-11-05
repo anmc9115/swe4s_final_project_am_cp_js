@@ -371,3 +371,81 @@ def raw_signal_trace(fpho_dataframe):
     print('\nClose plot window(s) to end script.')
     plt.show()
     return None
+
+def plot_1fiber_norm_iso(file_name, color):
+    """Creates a plot normalizing 1 fiber data to the isosbestic
+
+        Parameters
+        ----------
+        file_name: string
+                File containing dataframe
+        color: integer
+                Integer describing which color of fluorophore to plot
+                1 = green, 2 = red
+
+        Returns:
+        --------
+        f1GreenNorm.png or f1RedNorm.png: png file
+                File containing the normalized plot
+    """
+
+    # Open file
+    # Check for FileNotFound and Permission Error exceptions
+    try:
+        f = open(file_name, 'r',)
+    except FileNotFoundError:
+        print('No ' + file_name + ' file found')
+        sys.exit(1)
+    except PermissionError:
+        print('Unable to access file ' + file_name)
+        sys.exit(1)
+
+    # Initialize vectors for the isosbectic data, fluorophore data
+    # and time data
+    f1Iso = []
+    f1Color = []
+    f1Time = []
+    
+    # Read through each line of the dataframe
+    # Append the isosbectic, fluorophore and time data to their
+    # respective vectors, depending on input color information
+    header = None
+    for line in f:
+        if header is None:
+            header = line
+            continue
+        A = line.rstrip().split(',')
+        if color == 1:
+            f1Iso.append(float(A[0]))
+            f1Color.append(float(A[2]))
+            f1Time.append(float(A[8]))
+        elif color == 2:
+            f1Iso.append(float(A[3]))
+            f1Color.append(float(A[4]))
+            f1Time.append(float(A[7]))
+
+    # Get coefficients for normalized fit
+    reg = np.polyfit(f1Iso, f1Color, 1)
+    a = reg[0]
+    b = reg[1]
+
+    # Use the coefficients to create a control fit
+    controlFit = []
+    for value in f1Iso:
+        controlFit.append(a * value + b)
+    
+    # Normalize the fluorophore data using the control fit
+    normData = []
+    for i in range(len(f1Color)):
+        normData.append((f1Color[i] - controlFit[i]) / controlFit[i])
+    
+    # Plot the data
+    plt.plot(normData, f1Time)
+    
+    # Save the plot in a png file depending on color
+    if color == 1:
+        plt.savefig('f1GreenNorm.png')
+    elif color == 2:
+        plt.savefig('f1RedNorm.png')
+
+    f.close()
