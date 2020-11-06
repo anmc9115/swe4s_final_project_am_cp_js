@@ -8,7 +8,7 @@ import random
 class TestImportFiberphoData(unittest.TestCase):
 
     def test_column_assignments_one_fiber(self):
-        fTime, f1Red, f1Green = fpho_setup.import_fpho_data('1FiberTest.csv')
+        fTime, f1Red, f1Green = fpho_setup.import_fpho_data('TestData/1FiberTest.csv')
         test_time = ['52111503.5648', '52111528.4224', '52111553.6768',
                      '52111579.1104', '52111603.6736', '52111628.608',
                      '52111653.696', '52111678.848', '52111704.256',
@@ -41,7 +41,7 @@ class TestImportFiberphoData(unittest.TestCase):
         
         def test_column_assignments_one_fiber(self):
             fTime, f1Red, f1Green, f2Red, f2Green = fpho_setup.import_fpho_data(
-                                                                '1FiberTest.csv')
+                                                                'TestData/1FiberTest.csv')
             test_time = ['57887085.8496', '57887107.8144',
                          '57887132.3904', '57887157.6448',
                          '57887182.5664', '57887207.8336',
