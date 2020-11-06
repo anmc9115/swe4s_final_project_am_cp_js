@@ -48,12 +48,13 @@ def main():
                         type=bool,
                         required=False,
                         help='Type 1 to plot raw signal trace')
+    parser.add_argument('--plot_iso_fit',
+                        dest='plot_iso_fit',
+                        type=bool,
+                        required=False,
+                        help='Type 1 to plot iso fitted trace')
 
     args = parser.parse_args()
-
-    # Run import_fpho_data. I think this will always happen, and then we may do
-    # different things with this data, which will be optional arguments. If so,
-    # should we also return a dataframe?
 
     print(args.output_filename)
 
@@ -62,8 +63,11 @@ def main():
     # prints raw signal
     if args.plot_raw_signal:
         fpho_setup.raw_signal_trace(fpho_df, args.output_filename)
-
-    # print(fpho_df)                                 
+    
+    # prints isosbestic fit
+    if args.plot_iso_fit:
+        fpho_setup.plot_1fiber_norm_iso(fpho_df)
+                               
 
 if __name__ == '__main__':
     main()

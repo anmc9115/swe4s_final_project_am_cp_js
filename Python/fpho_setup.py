@@ -369,6 +369,101 @@ def raw_signal_trace(fpho_dataframe, output_filename):
         plt.title(str(title))
 
         # outputs raw sig plot as png file 
-        raw_sig_file_name = output_filename + '_' + channel + '_rawsig.png'
+        raw_sig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
         plt.savefig(raw_sig_file_name, bbox_inches='tight')
 
+
+def plot_1fiber_norm_iso(file_name):
+    """Creates a plot normalizing 1 fiber data to the isosbestic
+        Parameters
+        ----------
+        file_name: string
+                File containing dataframe
+        Returns:
+        --------
+        f1GreenNorm.png and f1RedNorm.png: png file
+                File containing the normalized plot for each fluorophore
+    """
+
+    # Open file
+    # Check for FileNotFound and Permission Error exceptions
+    try:
+        f = open(file_name, 'r',)
+    except FileNotFoundError:
+        print('No ' + file_name + ' file found')
+        sys.exit(1)
+    except PermissionError:
+        print('Unable to access file ' + file_name)
+        sys.exit(1)
+
+    # Initialize lists for the fluorophores and time
+    f1GreenIso = []
+    f1GreenGreen = []
+    f1GreenTime = []
+
+    f1RedIso = []
+    f1RedRed = []
+    f1RedTime = []
+
+    # Read through each line of the dataframe
+    # Append the isosbectic, fluorophore and time data to their
+    # respective vectors, depending on color
+    header = None
+    for line in f:
+        if header is None:
+            header = line
+            continue
+        A = line.rstrip().split(',')
+        f1GreenIso.append(float(A[0]))
+        f1GreenGreen.append(float(A[2]))
+        f1GreenTime.append(float(A[8]))
+        f1RedIso.append(float(A[3]))
+        f1RedRed.append(float(A[4]))
+        f1RedTime.append(float(A[7]))
+
+    # Get coefficients for normalized fit
+    regGreen = np.polyfit(f1GreenIso, f1GreenGreen, 1)
+    aGreen = regGreen[0]
+    bGreen = regGreen[1]
+
+    regRed = np.polyfit(f1RedIso, f1RedRed, 1)
+    aRed = regRed[0]
+    bRed = regRed[1]
+
+    # Use the coefficients to create a control fit
+    controlFitGreen = []
+    for value in f1GreenIso:
+        controlFitGreen.append(aGreen * value + bGreen)
+
+    controlFitRed = []
+    for value in f1RedIso:
+        controlFitRed.append(aRed * value + bRed)
+
+    # Normalize the fluorophore data using the control fit
+    normDataGreen = []
+    for i in range(len(f1GreenGreen)):
+        normDataGreen.append((f1GreenGreen[i]
+                              - controlFitGreen[i]) / controlFitGreen[i])
+
+    normDataRed = []
+    for i in range(len(f1RedRed)):
+        normDataRed.append((f1RedRed[i] - controlFitRed[i]) / controlFitRed[i])
+
+    # Plot the data for green
+    plt.plot(f1GreenTime, normDataGreen)
+    plt.title('Green Normalized to Isosbestic')
+
+    # Save the plot in a png file
+    figGreen = plt.savefig('f1GreenNormIso.png')
+    plt.close(figGreen)
+
+    # Plot the data for red
+    plt.plot(f1RedTime, normDataRed)
+    plt.title('Red Normalized to Isosbestic')
+
+    # Save the plot in a png file
+    figRed = plt.savefig('f1RedNormIso.png')
+    plt.close(figRed)
+
+    f.close()
+    
