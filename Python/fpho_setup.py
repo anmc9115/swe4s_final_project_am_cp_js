@@ -49,8 +49,6 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                 name depcits fiber number, channel, color
         """
 
-    # User questions to specify type of information in columns of input data
-
     # User input to indicate one fiber or two fiber data
     fiber_val = input("\nOne fiber or two fiber input data?\n"
                       + "Please enter <1> if one fiber data "
@@ -94,7 +92,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         while True:
             answer = input("\nYou indicated that column 3 contains f1Red"
                            + " and column 4 contains f1Green. "
-                           + "Is this correct (yes or no)? ")
+                           + "Is that correct (yes or no)? ")
             if answer.lower().startswith("y"):
                 break
             elif answer.lower().startswith("n"):
@@ -180,12 +178,9 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     f2Green = f2Green[250:]
     f2Red = f2Red[250:]
     fTime = fTime[250:]
-    # print('starts',len(f1Green),len(f1Red),
-    #       len(f2Green), len(f2Red), len(fTime))
-    # Same Length
 
     # De-interleave
-    offset1 = f1Green[0::3]  # takes every 3rd element
+    offset1 = f1Green[0::3]  # takes every 3rd element starting from 0
     offset2 = f1Green[1::3]
     offset3 = f1Green[2::3]
     meanoffsets = [mean(offset1), mean(offset2), mean(offset3)]
@@ -195,26 +190,24 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     greenIdX = meanoffsets.index(max(meanoffsets))
     redIdX = greenIdX+1
     isoIdX = greenIdX+2
-    # print('Idx',greenIdX,redIdX,isoIdX)
 
     # Assigning correct rows to colors
     # First fiber, green
     f1GreenIso = f1Green[greenIdX::3]
     f1GreenRed = f1Green[redIdX::3]
     f1GreenGreen = f1Green[isoIdX::3]
-    # print('green',len(f1GreenIso),len(f1GreenRed),len(f1GreenGreen))
 
     # First fiber, red
     f1RedIso = f1Red[greenIdX::3]
     f1RedRed = f1Red[redIdX::3]
     f1RedGreen = f1Red[isoIdX::3]
-    # print('red',len(f1RedIso),len(f1RedRed),len(f1RedGreen))
 
     # Sorting time by color
     fTimeIso = fTime[greenIdX::3]
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
+    # Create metadata file to put into last column of output dataframe
     metadata = make_summary_file(animal_ID=animal_ID,
                                  exp_date=exp_date,
                                  exp_desc=exp_desc)
@@ -230,9 +223,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         f2RedRed = f2Red[redIdX::3]
         f2RedGreen = f2Red[isoIdX::3]
 
-        # TO DO: Make dataframe holding each of these (pandas time)
-        # File name as big header
-
+        # Everything into a dictionary
         twofiber_dict = {'f1GreenIso': [f1GreenIso],
                          'f1GreenRed': [f1GreenRed],
                          'f1GreenGreen': [f1GreenGreen],
@@ -249,6 +240,8 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                          'fTimeRed': [fTimeRed],
                          'fTimeGreen': [fTimeGreen],
                          'metadata': [metadata]}
+
+        # Dictionary to dataframe
         twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
 
         # If writing to txt is better for some reason, we can use this code
@@ -256,11 +249,13 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         # f.write( str(twofiber_dict) )
         # f.close()
 
+        # Dataframe to output csv
         twofiber_fdata.to_csv(output_filename, index=None, na_rep='')
         print('Output CSV written to ' + output_filename)
         return twofiber_fdata
 
     else:
+        # Everything into a dictionary
         onefiber_dict = {'f1GreenIso': [f1GreenIso],
                          'f1GreenGreen': [f1GreenGreen],
                          'f1RedIso': [f1RedIso],
@@ -271,37 +266,38 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                          'fTimeGreen': [fTimeGreen],
                          'metadata': [metadata]}
 
+        # Dictionary to dataframe
         onefiber_fdata = pd.DataFrame(onefiber_dict)
 
+        # Dataframe to output csv
         onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
         print('Output CSV written to ' + output_filename)
         return onefiber_fdata
 
 
-def make_summary_file(animal_ID, exp_date, exp_desc, summarytxt_name=None):
+def make_summary_file(animal_ID, exp_date, exp_desc, summarycsv_name=None):
 
     """Creates a file that holds metadata about the primary input file
 
         Parameters
         ----------
-        animal_num: integer
-                Number of the animal
-        date: string
-                Date of the experiment
-        exp: string
-                Brief description of experiment
+        animal_ID: integer
+                   Number ID for the animal
+        exp_date: string
+                  Date of the experiment
+        exp_desc: string
+                  Brief description of experiment
+        summarycsv_name: optional string
+                         file path for output txt
 
         Returns:
         --------
         summary_info: text file
             file containing: version, animal_num, date, exp,
+
     """
 
-    # metadata_df = pd.DataFrame({'animal_IDnum': animal_num,
-    #                             'experiment_description': exp,
-    #                             'experiment_date': date},
-    #                             index=[0])
-
+    # Check data format
     try:
         datetime.datetime.strptime(exp_date, '%Y-%m-%d')
     except ValueError:
@@ -310,28 +306,37 @@ def make_summary_file(animal_ID, exp_date, exp_desc, summarytxt_name=None):
         # raise ValueError
         sys.exit(1)  # Change this to raise value error when using driver file?
 
+    # Create metadata dictionary
     info = {'Animal ID number': [animal_ID],
             'Date': [exp_date],
             'Brief description': [exp_desc]}
 
+    # Dictionary to DF
     metadata_df = pd.DataFrame.from_dict(info)
 
-    if summarytxt_name is not None:
-        metadata_df.to_csv(summarytxt_name, index=False)
+    # If user wants, write to csv
+    if summarycsv_name is not None:
+        metadata_df.to_csv(summarycsv_name, index=False)
 
     return metadata_df
 
 
-def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
+def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
     """Creates a plot of the raw signal traces
     Parameters
     ----------
     fpho_dataframe: pandas dataframe
                     Contains parsed fiberphotometry data
+
+    output_filename: String
+                     file path for output png
+
+    data_row_index: optional integer
+                    row containing data to plot
     Returns:
     --------
-    output_filename: string
-                     Name of plot png to be output
+    output_filename: PNG
+                     Plot of data
     """
     df = fpho_dataframe
 
@@ -384,9 +389,8 @@ def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
         channel_data = df[channel].values[data_row_index]
         time_data = df[time_col].values[data_row_index]
 
-        # Initiate plot, add data and title
+        # Initialize plot, add data and title
         plt.figure()
-
         plt.plot(time_data, channel_data, color=l_color)
         plt.title(str(channel))
 
