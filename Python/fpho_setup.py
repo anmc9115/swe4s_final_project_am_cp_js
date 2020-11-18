@@ -26,8 +26,11 @@ def import_fpho_data(input_filename, output_filename):
 
         Parameters
         ----------
-        file_name: string
-                   The path to the CSV file
+        input_filename: string
+                        The path to the CSV file
+
+        output_filename: string
+                         file path and name for output csv
 
         Returns:
         --------
@@ -250,20 +253,20 @@ def import_fpho_data(input_filename, output_filename):
         # f = open("dict.txt","w")
         # f.write( str(twofiber_dict) )
         # f.close()
-        
+
         twofiber_fdata.to_csv(output_filename, index=None, na_rep='')
         print('Output CSV written to ' + output_filename)
         return twofiber_fdata
 
     else:
         onefiber_dict = {'f1GreenIso': [f1GreenIso],
-                                       'f1GreenGreen': [f1GreenGreen],
-                                       'f1RedIso': [f1RedIso],
-                                       'f1RedRed': [f1RedRed],
-                                       'f1RedGreen': [f1RedGreen],
-                                       'fTimeIso': [fTimeIso],
-                                       'fTimeRed': [fTimeRed],
-                                       'fTimeGreen': [fTimeGreen]}
+                         'f1GreenGreen': [f1GreenGreen],
+                         'f1RedIso': [f1RedIso],
+                         'f1RedRed': [f1RedRed],
+                         'f1RedGreen': [f1RedGreen],
+                         'fTimeIso': [fTimeIso],
+                         'fTimeRed': [fTimeRed],
+                         'fTimeGreen': [fTimeGreen]}
 
         onefiber_fdata = pd.DataFrame(onefiber_dict)
         pd.DataFrame.head(onefiber_fdata)
@@ -348,22 +351,18 @@ def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
     for channel in channel_list:
 
         if 'f1Red' in str(channel):
-            title = channel
             channel = "f1RedRed"
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f2Red' in str(channel):
-            title = channel
             channel = "f2RedRed"
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f1Green' in str(channel):
-            title = channel
             channel = "f1GreenGreen"
             time_col = 'fTimeGreen'
             l_color = "g"
         if 'f2Green' in str(channel):
-            title = channel
             channel = "f2GreenGreen"
             time_col = 'fTimeGreen'
             l_color = "g"
@@ -371,12 +370,18 @@ def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
         channel_data = df[channel].values[data_row_index]
         time_data = df[time_col].values[data_row_index]
 
+        # Initiate plot, add data and title
         plt.figure()
         plt.plot(time_data, channel_data, color=l_color)
-        plt.title(str(title))
+        plt.title(str(channel))
+        
+        # Remove top and right borders
+        plt.gca().spines['right'].set_color('none')
+        plt.gca().spines['top'].set_color('none')
 
-        # outputs raw sig plot as png file 
-        raw_sig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
+        # outputs raw sig plot as png file
+        raw_sig_file_name = (output_filename[:-4] + '_'
+                             + channel + '_rawsig.png')
         plt.savefig(raw_sig_file_name, bbox_inches='tight')
 
 
@@ -473,4 +478,3 @@ def plot_1fiber_norm_iso(file_name):
     plt.close(figRed)
 
     f.close()
-    
