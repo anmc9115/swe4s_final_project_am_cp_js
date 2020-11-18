@@ -21,7 +21,8 @@ import datetime
 driver_version = 'v2.0'
 
 
-def import_fpho_data(animal_ID, exp_date, exp_desc, input_filename, output_filename):
+def import_fpho_data(animal_ID, exp_date, exp_desc,
+                     input_filename, output_filename):
     """Takes a file name, returns a dataframe of parsed data
 
         Parameters
@@ -214,7 +215,9 @@ def import_fpho_data(animal_ID, exp_date, exp_desc, input_filename, output_filen
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
-    metadata = make_summary_file(animal_ID=animal_ID,exp_date=exp_date,exp_desc=exp_desc)
+    metadata = make_summary_file(animal_ID=animal_ID,
+                                 exp_date=exp_date,
+                                 exp_desc=exp_desc)
 
     if fiber_val == 2:
         # Second fiber, green
@@ -320,15 +323,15 @@ def make_summary_file(animal_ID, exp_date, exp_desc, summarytxt_name=None):
 
 
 def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
-       """Creates a plot of the raw signal traces
-        Parameters
-        ----------
-        fpho_dataframe: pandas dataframe
-                Contains parsed fiberphotometry data
-        Returns:
-        --------
-        output_filename: string
-                Name of plot png to be output 
+    """Creates a plot of the raw signal traces
+    Parameters
+    ----------
+    fpho_dataframe: pandas dataframe
+                    Contains parsed fiberphotometry data
+    Returns:
+    --------
+    output_filename: string
+                     Name of plot png to be output
     """
     df = fpho_dataframe
 
@@ -386,7 +389,7 @@ def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
 
         plt.plot(time_data, channel_data, color=l_color)
         plt.title(str(channel))
-        
+
         # Remove top and right borders
         plt.gca().spines['right'].set_color('none')
         plt.gca().spines['top'].set_color('none')
