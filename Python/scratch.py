@@ -1,11 +1,17 @@
-import fpho_setup_dataframes
+import fpho_setup
 import sys
 from statistics import mean
 import pandas as pd
 
-pho_setup_DF = fpho_setup_dataframes.import_fpho_data('Data/1fiberSignal.csv','test.csv')
+pho_setup_DF = fpho_setup.import_fpho_data(animal_ID='vole1',
+                                           exp_date='2020-09-01',
+                                           exp_desc="testing",
+                                           input_filename='SampleData/1fiberSignal.csv',
+                                           output_filename='test.csv')
 
-metadata_file = fpho_setup_dataframes.make_summary_file(animal_num='1', exp = 'Prairie dogs hanging out',date = "2000-12-01", summarycsv_name="summary.csv")
-print(metadata_file)
+# metadata_file = fpho_setup.make_summary_file(animal_num='1', exp_desc = 'Prairie dogs hanging out',exp_yyyy_mm_dd = "2000-12-01", summarycsv_name="summary.csv")
+# print(metadata_file)
 
-# fpho_setup_dataframes.raw_signal_trace(pho_setup_DF)
+# print(pd.DataFrame.head(pho_setup_DF))
+
+# fpho_setup.raw_signal_trace(fpho_dataframe=pho_setup_DF,output_filename='test.png',data_row_index=0)

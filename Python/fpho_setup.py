@@ -21,13 +21,17 @@ import datetime
 driver_version = 'v2.0'
 
 
-def import_fpho_data(input_filename, output_filename):
+def import_fpho_data(animal_ID, exp_date, exp_desc,
+                     input_filename, output_filename):
     """Takes a file name, returns a dataframe of parsed data
 
         Parameters
         ----------
-        file_name: string
-                   The path to the CSV file
+        input_filename: string
+                        The path to the CSV file
+
+        output_filename: string
+                         file path and name for output csv
 
         Returns:
         --------
@@ -92,7 +96,6 @@ def import_fpho_data(input_filename, output_filename):
                            + " and column 4 contains f1Green. "
                            + "Is this correct (yes or no)? ")
             if answer.lower().startswith("y"):
-                print("Moving forward...\n")
                 break
             elif answer.lower().startswith("n"):
                 print("You replied no. Restarting data information entry")
@@ -104,7 +107,6 @@ def import_fpho_data(input_filename, output_filename):
                            + " and column 4 contains f1Red. "
                            + "Is this correct (yes or no)?\n")
             if answer.lower().startswith("y"):
-                print("Moving forward...\n")
                 break
             elif answer.lower().startswith("n"):
                 print("You replied no. Please restart")
@@ -129,7 +131,6 @@ def import_fpho_data(input_filename, output_filename):
                                + "and column 6 contains f1Green. "
                                + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
-                    print("Moving forward...\n")
                     break
                 elif answer.lower().startswith("n"):
                     print("You replied no. Please restart")
@@ -141,7 +142,6 @@ def import_fpho_data(input_filename, output_filename):
                                + "and column 6 contains f2Red. "
                                + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
-                    print("Moving forward...\n")
                     break
                 elif answer.lower().startswith("n"):
                     print("You replied no. Please restart")
@@ -215,6 +215,10 @@ def import_fpho_data(input_filename, output_filename):
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
+    metadata = make_summary_file(animal_ID=animal_ID,
+                                 exp_date=exp_date,
+                                 exp_desc=exp_desc)
+
     if fiber_val == 2:
         # Second fiber, green
         f2GreenIso = f2Green[greenIdX::3]
@@ -229,45 +233,54 @@ def import_fpho_data(input_filename, output_filename):
         # TO DO: Make dataframe holding each of these (pandas time)
         # File name as big header
 
-        twofiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
-                                       'f1GreenRed': pd.Series(f1GreenRed),
-                                       'f1GreenGreen': pd.Series(f1GreenGreen),
-                                       'f2GreenIso': pd.Series(f2GreenIso),
-                                       'f2GreenRed': pd.Series(f2GreenRed),
-                                       'f2GreenGreen': pd.Series(f2GreenGreen),
-                                       'f1RedIso': pd.Series(f1RedIso),
-                                       'f1RedRed': pd.Series(f1RedRed),
-                                       'f1RedGreen': pd.Series(f1RedGreen),
-                                       'f2RedIso': pd.Series(f2RedIso),
-                                       'f2RedRed': pd.Series(f2RedRed),
-                                       'f2RedGreen': pd.Series(f2RedGreen),
-                                       'fTimeIso': pd.Series(fTimeIso),
-                                       'fTimeRed': pd.Series(fTimeRed),
-                                       'fTimeGreen': pd.Series(fTimeGreen)})
+        twofiber_dict = {'f1GreenIso': [f1GreenIso],
+                         'f1GreenRed': [f1GreenRed],
+                         'f1GreenGreen': [f1GreenGreen],
+                         'f2GreenIso': [f2GreenIso],
+                         'f2GreenRed': [f2GreenRed],
+                         'f2GreenGreen': [f2GreenGreen],
+                         'f1RedIso': [f1RedIso],
+                         'f1RedRed': [f1RedRed],
+                         'f1RedGreen': [f1RedGreen],
+                         'f2RedIso': [f2RedIso],
+                         'f2RedRed': [f2RedRed],
+                         'f2RedGreen': [f2RedGreen],
+                         'fTimeIso': [fTimeIso],
+                         'fTimeRed': [fTimeRed],
+                         'fTimeGreen': [fTimeGreen],
+                         'metadata': [metadata]}
+        twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
 
-        twofiber_fdata.to_csv(output_filename, index=False)
+        # If writing to txt is better for some reason, we can use this code
+        # f = open("dict.txt","w")
+        # f.write( str(twofiber_dict) )
+        # f.close()
+
+        twofiber_fdata.to_csv(output_filename, index=None, na_rep='')
         print('Output CSV written to ' + output_filename)
         return twofiber_fdata
 
     else:
-        onefiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
-                                       'f1GreenRed': pd.Series(f1GreenRed),
-                                       'f1GreenGreen': pd.Series(f1GreenGreen),
-                                       'f1RedIso': pd.Series(f1RedIso),
-                                       'f1RedRed': pd.Series(f1RedRed),
-                                       'f1RedGreen': pd.Series(f1RedGreen),
-                                       'fTimeIso': pd.Series(fTimeIso),
-                                       'fTimeRed': pd.Series(fTimeRed),
-                                       'fTimeGreen': pd.Series(fTimeGreen)})
+        onefiber_dict = {'f1GreenIso': [f1GreenIso],
+                         'f1GreenGreen': [f1GreenGreen],
+                         'f1RedIso': [f1RedIso],
+                         'f1RedRed': [f1RedRed],
+                         'f1RedGreen': [f1RedGreen],
+                         'fTimeIso': [fTimeIso],
+                         'fTimeRed': [fTimeRed],
+                         'fTimeGreen': [fTimeGreen],
+                         'metadata': [metadata]}
+
+        onefiber_fdata = pd.DataFrame(onefiber_dict)
 
         onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
         print('Output CSV written to ' + output_filename)
         return onefiber_fdata
 
 
-def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
+def make_summary_file(animal_ID, exp_date, exp_desc, summarytxt_name=None):
 
-    """Creates a file that holds important information
+    """Creates a file that holds metadata about the primary input file
 
         Parameters
         ----------
@@ -290,35 +303,37 @@ def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
     #                             index=[0])
 
     try:
-        datetime.datetime.strptime(exp_yyyy_mm_dd, '%Y-%m-%d')
+        datetime.datetime.strptime(exp_date, '%Y-%m-%d')
     except ValueError:
-        print('Date {'+exp_yyyy_mm_dd+'} not entered in correct format.'
+        print('Date {'+exp_date+'} not entered in correct format.'
               + ' Please re-enter in YYYY-MM-DD format.')
         # raise ValueError
         sys.exit(1)  # Change this to raise value error when using driver file?
 
-    info = {'Description': ['Animal ID number', 'Date', 'Brief description'],
-            'Data': [animal_num, exp_yyyy_mm_dd, exp_desc]}
+    info = {'Animal ID number': [animal_ID],
+            'Date': [exp_date],
+            'Brief description': [exp_desc]}
 
-    metadata_df = pd.DataFrame(info)
-    metadata_df.to_csv(summarycsv_name, index=False)
+    metadata_df = pd.DataFrame.from_dict(info)
+
+    if summarytxt_name is not None:
+        metadata_df.to_csv(summarytxt_name, index=False)
 
     return metadata_df
 
 
-def raw_signal_trace(fpho_dataframe, output_filename):
-     """Creates a plot of the raw signal traces
-        Parameters
-        ----------
-        fpho_dataframe: pandas dataframe
-                Contains parsed fiberphotometry data
-        Returns:
-        --------
-        output_filename: string
-                Name of plot png to be output 
+def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
+    """Creates a plot of the raw signal traces
+    Parameters
+    ----------
+    fpho_dataframe: pandas dataframe
+                    Contains parsed fiberphotometry data
+    Returns:
+    --------
+    output_filename: string
+                     Name of plot png to be output
     """
     df = fpho_dataframe
-    # print(df.head(1))
 
     # Get user input for what to plot
     channel_input = input("----------\n"
@@ -329,7 +344,7 @@ def raw_signal_trace(fpho_dataframe, output_filename):
                           + "\n----------\n"
                           + "Selection: ")
 
-    # Make a list of user input
+    # Make a list of user inputs
     if ',' in channel_input:
         channel_list = channel_input.split(',')
     else:
@@ -350,32 +365,34 @@ def raw_signal_trace(fpho_dataframe, output_filename):
     for channel in channel_list:
 
         if 'f1Red' in str(channel):
-            title = channel
             channel = "f1RedRed"
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f2Red' in str(channel):
-            title = channel
             channel = "f2RedRed"
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f1Green' in str(channel):
-            title = channel
             channel = "f1GreenGreen"
             time_col = 'fTimeGreen'
             l_color = "g"
         if 'f2Green' in str(channel):
-            title = channel
             channel = "f2GreenGreen"
             time_col = 'fTimeGreen'
             l_color = "g"
 
-        channel_idx = df.columns.get_loc(channel)
-        time_idx = df.columns.get_loc(time_col)
+        channel_data = df[channel].values[data_row_index]
+        time_data = df[time_col].values[data_row_index]
 
+        # Initiate plot, add data and title
         plt.figure()
-        plt.plot(df.iloc[:, time_idx], df.iloc[:, channel_idx], color=l_color)
-        plt.title(str(title))
+
+        plt.plot(time_data, channel_data, color=l_color)
+        plt.title(str(channel))
+
+        # Remove top and right borders
+        plt.gca().spines['right'].set_color('none')
+        plt.gca().spines['top'].set_color('none')
 
         # outputs raw sig plot as png file
         rawsig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
