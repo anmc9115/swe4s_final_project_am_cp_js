@@ -21,7 +21,7 @@ import datetime
 driver_version = 'v2.0'
 
 
-def import_fpho_data(input_filename, output_filename):
+def import_fpho_data(animal_ID, exp_date, exp_desc, input_filename, output_filename):
     """Takes a file name, returns a dataframe of parsed data
 
         Parameters
@@ -95,7 +95,6 @@ def import_fpho_data(input_filename, output_filename):
                            + " and column 4 contains f1Green. "
                            + "Is this correct (yes or no)? ")
             if answer.lower().startswith("y"):
-                print("Moving forward...\n")
                 break
             elif answer.lower().startswith("n"):
                 print("You replied no. Restarting data information entry")
@@ -107,7 +106,6 @@ def import_fpho_data(input_filename, output_filename):
                            + " and column 4 contains f1Red. "
                            + "Is this correct (yes or no)?\n")
             if answer.lower().startswith("y"):
-                print("Moving forward...\n")
                 break
             elif answer.lower().startswith("n"):
                 print("You replied no. Please restart")
@@ -132,7 +130,6 @@ def import_fpho_data(input_filename, output_filename):
                                + "and column 6 contains f1Green. "
                                + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
-                    print("Moving forward...\n")
                     break
                 elif answer.lower().startswith("n"):
                     print("You replied no. Please restart")
@@ -144,7 +141,6 @@ def import_fpho_data(input_filename, output_filename):
                                + "and column 6 contains f2Red. "
                                + "Is this correct (yes or no)?\n")
                 if answer.lower().startswith("y"):
-                    print("Moving forward...\n")
                     break
                 elif answer.lower().startswith("n"):
                     print("You replied no. Please restart")
@@ -218,6 +214,8 @@ def import_fpho_data(input_filename, output_filename):
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
+    metadata = make_summary_file(animal_ID=animal_ID,exp_date=exp_date,exp_desc=exp_desc)
+
     if fiber_val == 2:
         # Second fiber, green
         f2GreenIso = f2Green[greenIdX::3]
@@ -231,8 +229,6 @@ def import_fpho_data(input_filename, output_filename):
 
         # TO DO: Make dataframe holding each of these (pandas time)
         # File name as big header
-
-        metadata = make_summary_file()
 
         twofiber_dict = {'f1GreenIso': [f1GreenIso],
                          'f1GreenRed': [f1GreenRed],
@@ -248,7 +244,8 @@ def import_fpho_data(input_filename, output_filename):
                          'f2RedGreen': [f2RedGreen],
                          'fTimeIso': [fTimeIso],
                          'fTimeRed': [fTimeRed],
-                         'fTimeGreen': [fTimeGreen]}
+                         'fTimeGreen': [fTimeGreen],
+                         'metadata': [metadata]}
         twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
 
         # If writing to txt is better for some reason, we can use this code
@@ -268,19 +265,19 @@ def import_fpho_data(input_filename, output_filename):
                          'f1RedGreen': [f1RedGreen],
                          'fTimeIso': [fTimeIso],
                          'fTimeRed': [fTimeRed],
-                         'fTimeGreen': [fTimeGreen]}
+                         'fTimeGreen': [fTimeGreen],
+                         'metadata': [metadata]}
 
         onefiber_fdata = pd.DataFrame(onefiber_dict)
-        pd.DataFrame.head(onefiber_fdata)
 
         onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
         print('Output CSV written to ' + output_filename)
         return onefiber_fdata
 
 
-def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name=None):
+def make_summary_file(animal_ID, exp_date, exp_desc, summarytxt_name=None):
 
-    """Creates a file that holds important information
+    """Creates a file that holds metadata about the primary input file
 
         Parameters
         ----------
@@ -303,19 +300,21 @@ def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name=None
     #                             index=[0])
 
     try:
-        datetime.datetime.strptime(exp_yyyy_mm_dd, '%Y-%m-%d')
+        datetime.datetime.strptime(exp_date, '%Y-%m-%d')
     except ValueError:
-        print('Date {'+exp_yyyy_mm_dd+'} not entered in correct format.'
+        print('Date {'+exp_date+'} not entered in correct format.'
               + ' Please re-enter in YYYY-MM-DD format.')
         # raise ValueError
         sys.exit(1)  # Change this to raise value error when using driver file?
 
-    info = {'Description': ['Animal ID number', 'Date', 'Brief description'],
-            'Data': [animal_num, exp_yyyy_mm_dd, exp_desc]}
+    info = {'Animal ID number': [animal_ID],
+            'Date': [exp_date],
+            'Brief description': [exp_desc]}
 
-    if summarycsv_name is not None:
-        metadata_df = pd.DataFrame(info)
-        metadata_df.to_csv(summarycsv_name, index=False)
+    metadata_df = pd.DataFrame.from_dict(info)
+
+    if summarytxt_name is not None:
+        metadata_df.to_csv(summarytxt_name, index=False)
 
     return metadata_df
 
