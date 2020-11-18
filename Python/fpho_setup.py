@@ -320,7 +320,16 @@ def make_summary_file(animal_ID, exp_date, exp_desc, summarytxt_name=None):
 
 
 def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
-
+       """Creates a plot of the raw signal traces
+        Parameters
+        ----------
+        fpho_dataframe: pandas dataframe
+                Contains parsed fiberphotometry data
+        Returns:
+        --------
+        output_filename: string
+                Name of plot png to be output 
+    """
     df = fpho_dataframe
 
     # Get user input for what to plot
@@ -374,6 +383,7 @@ def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
 
         # Initiate plot, add data and title
         plt.figure()
+
         plt.plot(time_data, channel_data, color=l_color)
         plt.title(str(channel))
         
@@ -382,9 +392,8 @@ def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
         plt.gca().spines['top'].set_color('none')
 
         # outputs raw sig plot as png file
-        raw_sig_file_name = (output_filename[:-4] + '_'
-                             + channel + '_rawsig.png')
-        plt.savefig(raw_sig_file_name, bbox_inches='tight')
+        rawsig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
+        plt.savefig(rawsig_file_name, bbox_inches='tight')
 
 
 def plot_1fiber_norm_iso(file_name):
