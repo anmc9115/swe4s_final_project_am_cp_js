@@ -232,6 +232,8 @@ def import_fpho_data(input_filename, output_filename):
         # TO DO: Make dataframe holding each of these (pandas time)
         # File name as big header
 
+        metadata = make_summary_file()
+
         twofiber_dict = {'f1GreenIso': [f1GreenIso],
                          'f1GreenRed': [f1GreenRed],
                          'f1GreenGreen': [f1GreenGreen],
@@ -276,7 +278,7 @@ def import_fpho_data(input_filename, output_filename):
         return onefiber_fdata
 
 
-def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
+def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name=None):
 
     """Creates a file that holds important information
 
@@ -311,8 +313,9 @@ def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
     info = {'Description': ['Animal ID number', 'Date', 'Brief description'],
             'Data': [animal_num, exp_yyyy_mm_dd, exp_desc]}
 
-    metadata_df = pd.DataFrame(info)
-    metadata_df.to_csv(summarycsv_name, index=False)
+    if summarycsv_name is not None:
+        metadata_df = pd.DataFrame(info)
+        metadata_df.to_csv(summarycsv_name, index=False)
 
     return metadata_df
 
