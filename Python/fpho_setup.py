@@ -229,36 +229,44 @@ def import_fpho_data(input_filename, output_filename):
         # TO DO: Make dataframe holding each of these (pandas time)
         # File name as big header
 
-        twofiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
-                                       'f1GreenRed': pd.Series(f1GreenRed),
-                                       'f1GreenGreen': pd.Series(f1GreenGreen),
-                                       'f2GreenIso': pd.Series(f2GreenIso),
-                                       'f2GreenRed': pd.Series(f2GreenRed),
-                                       'f2GreenGreen': pd.Series(f2GreenGreen),
-                                       'f1RedIso': pd.Series(f1RedIso),
-                                       'f1RedRed': pd.Series(f1RedRed),
-                                       'f1RedGreen': pd.Series(f1RedGreen),
-                                       'f2RedIso': pd.Series(f2RedIso),
-                                       'f2RedRed': pd.Series(f2RedRed),
-                                       'f2RedGreen': pd.Series(f2RedGreen),
-                                       'fTimeIso': pd.Series(fTimeIso),
-                                       'fTimeRed': pd.Series(fTimeRed),
-                                       'fTimeGreen': pd.Series(fTimeGreen)})
+        twofiber_dict = {'f1GreenIso': [f1GreenIso],
+                         'f1GreenRed': [f1GreenRed],
+                         'f1GreenGreen': [f1GreenGreen],
+                         'f2GreenIso': [f2GreenIso],
+                         'f2GreenRed': [f2GreenRed],
+                         'f2GreenGreen': [f2GreenGreen],
+                         'f1RedIso': [f1RedIso],
+                         'f1RedRed': [f1RedRed],
+                         'f1RedGreen': [f1RedGreen],
+                         'f2RedIso': [f2RedIso],
+                         'f2RedRed': [f2RedRed],
+                         'f2RedGreen': [f2RedGreen],
+                         'fTimeIso': [fTimeIso],
+                         'fTimeRed': [fTimeRed],
+                         'fTimeGreen': [fTimeGreen]}
+        twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
 
-        twofiber_fdata.to_csv(output_filename, index=False)
+        # If writing to txt is better for some reason, we can use this code
+        # f = open("dict.txt","w")
+        # f.write( str(twofiber_dict) )
+        # f.close()
+        
+        twofiber_fdata.to_csv(output_filename, index=None, na_rep='')
         print('Output CSV written to ' + output_filename)
         return twofiber_fdata
 
     else:
-        onefiber_fdata = pd.DataFrame({'f1GreenIso': pd.Series(f1GreenIso),
-                                       'f1GreenRed': pd.Series(f1GreenRed),
-                                       'f1GreenGreen': pd.Series(f1GreenGreen),
-                                       'f1RedIso': pd.Series(f1RedIso),
-                                       'f1RedRed': pd.Series(f1RedRed),
-                                       'f1RedGreen': pd.Series(f1RedGreen),
-                                       'fTimeIso': pd.Series(fTimeIso),
-                                       'fTimeRed': pd.Series(fTimeRed),
-                                       'fTimeGreen': pd.Series(fTimeGreen)})
+        onefiber_dict = {'f1GreenIso': [f1GreenIso],
+                                       'f1GreenGreen': [f1GreenGreen],
+                                       'f1RedIso': [f1RedIso],
+                                       'f1RedRed': [f1RedRed],
+                                       'f1RedGreen': [f1RedGreen],
+                                       'fTimeIso': [fTimeIso],
+                                       'fTimeRed': [fTimeRed],
+                                       'fTimeGreen': [fTimeGreen]}
+
+        onefiber_fdata = pd.DataFrame(onefiber_dict)
+        pd.DataFrame.head(onefiber_fdata)
 
         onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
         print('Output CSV written to ' + output_filename)
@@ -306,10 +314,9 @@ def make_summary_file(animal_num, exp_yyyy_mm_dd, exp_desc, summarycsv_name):
     return metadata_df
 
 
-def raw_signal_trace(fpho_dataframe, output_filename):
+def raw_signal_trace(fpho_dataframe, data_row_index, output_filename):
 
     df = fpho_dataframe
-    # print(df.head(1))
 
     # Get user input for what to plot
     channel_input = input("----------\n"
@@ -320,7 +327,7 @@ def raw_signal_trace(fpho_dataframe, output_filename):
                           + "\n----------\n"
                           + "Selection: ")
 
-    # Make a list of user input
+    # Make a list of user inputs
     if ',' in channel_input:
         channel_list = channel_input.split(',')
     else:
@@ -361,11 +368,11 @@ def raw_signal_trace(fpho_dataframe, output_filename):
             time_col = 'fTimeGreen'
             l_color = "g"
 
-        channel_idx = df.columns.get_loc(channel)
-        time_idx = df.columns.get_loc(time_col)
+        channel_data = df[channel].values[data_row_index]
+        time_data = df[time_col].values[data_row_index]
 
         plt.figure()
-        plt.plot(df.iloc[:, time_idx], df.iloc[:, channel_idx], color=l_color)
+        plt.plot(time_data, channel_data, color=l_color)
         plt.title(str(title))
 
         # outputs raw sig plot as png file 
