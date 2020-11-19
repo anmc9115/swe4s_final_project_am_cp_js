@@ -154,6 +154,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     # Open file, catch errors
     try:
         file = open(input_filename, 'r')
+        header = None
     except FileNotFoundError:
         print("Could not find file: " + input_filename)
         sys.exit(1)
@@ -162,6 +163,9 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         sys.exit(2)
 
     for line in file:
+        if header is None:
+            header = line
+            continue
         columns = line.rstrip().split(' ')
         fTime.append(float(columns[0]))
         f1Red.append(float(columns[f1Red_col-1]))
