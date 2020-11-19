@@ -373,12 +373,12 @@ def raw_signal_trace(fpho_dataframe):
     return None
 
 
-def plot_1fiber_norm_iso(file_name):
+def plot_1fiber_norm_iso(fpho_dataframe):
     """Creates a plot normalizing 1 fiber data to the isosbestic
 
         Parameters
         ----------
-        file_name: string
+        fpho_dataframe: string
                 File containing dataframe
 
         Returns:
@@ -387,15 +387,15 @@ def plot_1fiber_norm_iso(file_name):
                 File containing the normalized plot for each fluorophore
     """
 
-    # Open file
+    # Open data frame
     # Check for FileNotFound and Permission Error exceptions
     try:
-        f = open(file_name, 'r',)
+        f = open(fpho_dataframe, 'r',)
     except FileNotFoundError:
-        print('No ' + file_name + ' file found')
+        print('No ' + fpho_dataframe + ' file found')
         sys.exit(1)
     except PermissionError:
-        print('Unable to access file ' + file_name)
+        print('Unable to access file ' + fpho_dataframe)
         sys.exit(1)
 
     # Initialize vectors for the isosbectic data, fluorophore data
@@ -408,6 +408,14 @@ def plot_1fiber_norm_iso(file_name):
     f1RedRed = []
     f1RedTime = []
 
+    # Assign columns
+    greenIso_col = 0
+    greenGreen_col = 2
+    greenTime_col = 8
+    redIso_col = 3
+    redRed_col = 4
+    redTime_col = 7
+
     # Read through each line of the dataframe
     # Append the isosbectic, fluorophore and time data to their
     # respective vectors, depending on color
@@ -417,12 +425,12 @@ def plot_1fiber_norm_iso(file_name):
             header = line
             continue
         A = line.rstrip().split(',')
-        f1GreenIso.append(float(A[0]))
-        f1GreenGreen.append(float(A[2]))
-        f1GreenTime.append(float(A[8]))
-        f1RedIso.append(float(A[3]))
-        f1RedRed.append(float(A[4]))
-        f1RedTime.append(float(A[7]))
+        f1GreenIso.append(float(A[greenIso_col]))
+        f1GreenGreen.append(float(A[greenGreen_col]))
+        f1GreenTime.append(float(A[greenTime_col]))
+        f1RedIso.append(float(A[redIso_col]))
+        f1RedRed.append(float(A[redRed_col]))
+        f1RedTime.append(float(A[redTime_col]))
 
     # Get coefficients for normalized fit
     regGreen = np.polyfit(f1GreenIso, f1GreenGreen, 1)
