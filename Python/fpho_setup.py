@@ -420,14 +420,14 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     """
 
     # Open dataframe
-    # Check for FileNotFound and Permission Error exceptions
+    # Check for Name Error and Permission Error exceptions
     try:
-        f = open(fpho_dataframe, 'r',)
-    except FileNotFoundError:
-        print('No ' + fpho_dataframe + ' file found')
+        df = fpho_dataframe
+    except NameError:
+        print('No ' + fpho_dataframe + ' data frame found')
         sys.exit(1)
     except PermissionError:
-        print('Unable to access file ' + fpho_dataframe)
+        print('Unable to access data frame ' + fpho_dataframe)
         sys.exit(1)
 
     # Initialize lists for the fluorophores and time
@@ -438,30 +438,41 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     f1RedIso = []
     f1RedRed = []
     f1RedTime = []
-    
+
     # Define columns
-    greenIso_col = 0
-    greenGreen_col = 2
-    greenTime_col = 8
-    redIso_col = 3
-    redRed_col = 4
-    redTime_col = 7
+    greenIso_col = "f1GreenIso"
+    greenGreen_col = "f1GreenGreen"
+    greenTime_col = "fTimeGreen"
+    redIso_col = "f1RedIso"
+    redRed_col = "f1RedRed"
+    redTime_col = "fTimeRed"
 
     # Read through each line of the dataframe
     # Append the isosbectic, fluorophore and time data to their
     # respective vectors, depending on color
-    header = None
-    for line in f:
-        if header is None:
-            header = line
-            continue
-        A = line.rstrip().split(',')
-        f1GreenIso.append(float(A[greenIso_col]))
-        f1GreenGreen.append(float(A[greenGreen_col]))
-        f1GreenTime.append(float(A[greenTime_col]))
-        f1RedIso.append(float(A[redIso_col]))
-        f1RedRed.append(float(A[redRed_col]))
-        f1RedTime.append(float(A[redTime_col]))
+    f1GreenIso = df[greenIso_col].values[0]
+    f1GreenGreen = df[greenGreen_col].values[0]
+    f1GreenTime = df[greenTime_col].values[0]
+    f1RedIso = df[redIso_col].values[0]
+    f1RedRed = df[redRed_col].values[0]
+    f1RedTime = df[redTime_col].values[0]
+
+    # Make sure the iso and color vectors have the same number
+    # of values. If not, then trim off the last few values
+    # from the longer vector
+    if len(f1GreenIso) > len(f1GreenGreen):
+        n = len(f1GreenIso) - len(f1GreenGreen)
+        del f1GreenIso[-n:]
+    elif len(f1GreenIso) < len(f1GreenGreen):
+        n = len(f1GreenGreen) - len(f1GreenIso)
+        del f1GreenGreen[-n:]
+
+    if len(f1RedIso) > len(f1RedRed):
+        n = len(f1RedIso) - len(f1RedRed)
+        del f1RedIso[-n:]
+    elif len(f1RedIso) < len(f1RedRed):
+        n = len(f1RedRed) - len(f1RedIso)
+        del f1RedRed[-n:]
 
     # Get coefficients for normalized fit
     regGreen = np.polyfit(f1GreenIso, f1GreenGreen, 1)
@@ -491,6 +502,23 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     for i in range(len(f1RedRed)):
         normDataRed.append((f1RedRed[i] - controlFitRed[i]) / controlFitRed[i])
 
+    # Make sure the normalized data vector and the time
+    # vector have the same number of values. If not, then
+    # trim off the last few values from the longer vector
+    if len(f1GreenTime) > len(normDataGreen):
+        n = len(f1GreenTime) - len(normDataGreen)
+        del f1GreenTime[-n:]
+    elif len(f1GreenTime) < len(normDataGreen):
+        n = len(normDataGreen) - len(f1GreenTime)
+        del normDataGreen[-n:]
+
+    if len(f1RedTime) > len(normDataRed):
+        n = len(f1RedTime) - len(normDataRed)
+        del f1RedTime[-n:]
+    elif len(f1RedTime) < len(normDataRed):
+        n = len(normDataRed) - len(f1RedTime)
+        del normDataRed[-n:]
+
     # Plot the data for green
     plt.plot(f1GreenTime, normDataGreen)
     plt.title('Green Normalized to Isosbestic')
@@ -507,4 +535,3 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     figRed = plt.savefig('f1RedNormIso.png')
     plt.close(figRed)
 
-    f.close()
