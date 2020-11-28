@@ -76,13 +76,11 @@ def main():
 
     parser.add_argument('--plot_raw_signal',
                         dest='plot_raw_signal',
-                        # type=bool,
                         action='store_true',
                         help='Type 1 to plot raw signal trace')
 
     parser.add_argument('--plot_iso_fit',
                         dest='plot_iso_fit',
-                        # type=bool,
                         action='store_true',
                         help='Type 1 to plot iso fitted trace')
 
