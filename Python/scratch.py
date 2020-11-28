@@ -15,3 +15,5 @@ pho_setup_DF = fpho_setup.import_fpho_data(animal_ID='vole1',
 # print(pd.DataFrame.head(pho_setup_DF))
 
 # fpho_setup.raw_signal_trace(fpho_dataframe=pho_setup_DF,output_filename='test.png',data_row_index=0)
+
+# Norm = fpho_setup.plot_1fiber_norm_iso(fpho_dataframe=pho_setup_DF)
