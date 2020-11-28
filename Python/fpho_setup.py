@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
+from scipy.optimize import curve_fit
 
 driver_version = 'v2.0'
 
@@ -533,5 +534,143 @@ def plot_1fiber_norm_iso(fpho_dataframe):
 
     # Save the plot in a png file
     figRed = plt.savefig('f1RedNormIso.png')
+    plt.close(figRed)
+
+
+def fit_exp(values, a, b, c, d):
+    """Transforms data into an exponential function
+    of the form y=A*exp(-B*X)+C*exp(-D*x).
+
+        Parameters
+        ----------
+        values: list
+                data
+        a, b, c, d: integers or floats
+                estimates for the parameter values of
+                A, B, C and D
+    """
+
+    values = np.array(values)
+
+    return a * np.exp(b * values) + c * np.exp(d * values)
+
+
+def plot_1fiber_norm_fitted(fpho_dataframe):
+    """Creates a plot normalizing 1 fiber data to an
+    exponential of the form y=A*exp(-B*X)+C*exp(-D*x).
+
+        Parameters
+        ----------
+        fpho_dataframe: string
+                Pandas dataframe
+        Returns:
+        --------
+        f1GreenNormExp.png and f1RedNormExp.png: png file
+                File containing the normalized plot for each fluorophore
+    """
+
+    # Open dataframe
+    # Check for Name Error and Permission Error exceptions
+    try:
+        df = fpho_dataframe
+    except NameError:
+        print('No ' + fpho_dataframe + ' data frame found')
+        sys.exit(1)
+    except PermissionError:
+        print('Unable to access data frame ' + fpho_dataframe)
+        sys.exit(1)
+
+    # Initialize lists for the fluorophores and time
+    f1GreenGreen = []
+    f1GreenTime = []
+
+    f1RedRed = []
+    f1RedTime = []
+
+    # Define columns
+    greenGreen_col = "f1GreenGreen"
+    greenTime_col = "fTimeGreen"
+    redRed_col = "f1RedRed"
+    redTime_col = "fTimeRed"
+
+    # Read through each line of the dataframe
+    # Append the fluorophore and time data to their
+    # respective vectors, depending on color
+    f1GreenGreen = df[greenGreen_col].values[0]
+    f1GreenTime = df[greenTime_col].values[0]
+    f1RedRed = df[redRed_col].values[0]
+    f1RedTime = df[redTime_col].values[0]
+
+    # Make sure the time and color vectors have the same number
+    # of values. If not, then trim off the last few values
+    # from the longer vector
+    if len(f1GreenTime) > len(f1GreenGreen):
+        n = len(f1GreenTime) - len(f1GreenGreen)
+        del f1GreenTime[-n:]
+    elif len(f1GreenTime) < len(f1GreenGreen):
+        n = len(f1GreenGreen) - len(f1GreenTime)
+        del f1GreenGreen[-n:]
+
+    if len(f1RedTime) > len(f1RedRed):
+        n = len(f1RedTime) - len(f1RedRed)
+        del f1RedTime[-n:]
+    elif len(f1RedTime) < len(f1RedRed):
+        n = len(f1RedRed) - len(f1RedTime)
+        del f1RedRed[-n:]
+
+    # Initialize the time data to 0 by subracting each value
+    # by the first value
+    timeG = []
+    for i in range(len(f1GreenTime)):
+        timeG.append(f1GreenTime[i] - f1GreenTime[0])
+    
+    timeR = []
+    for i in range(len(f1RedTime)):
+        timeR.append(f1RedTime[i] - f1RedTime[0])
+
+    # Get coefficients for normalized fit using first guesses
+    # for the coefficients - B and D (the second and fourth
+    # inputs for p0) must be negative, while A and C (the
+    # first and third inputs for p0) must be positive
+    popt, pcov = curve_fit(fit_exp, timeG, f1GreenGreen,
+                            p0=(1.0,-0.001,1.0,-0.001), maxfev=500000)
+
+    AG = popt[0] # A value
+    BG = popt[1] # B value
+    CG = popt[2] # C value
+    DG = popt[3] # D value
+
+    popt, pcov = curve_fit(fit_exp, timeR, f1RedRed,
+                            p0=(1.0,-0.001,1.0,-0.001), maxfev=500000)
+
+    AR = popt[0] # A value
+    BR = popt[1] # B value
+    CR = popt[2] # C value
+    DR = popt[3] # D value
+
+    # Generate fit line using calculated coefficients
+    fitGreen = fit_exp(timeG, AG, BG, CG, DG)
+    fitRed = fit_exp(timeR, AR, BR, CR, DR)
+
+    # Plot the data for green
+    plt.plot(timeG, f1GreenGreen)
+    plt.plot(timeG, fitGreen)
+    plt.xlabel('Time')
+    plt.ylabel('Fluorescence')
+    plt.title('Green Normalized to Exponential')
+
+    # Save the plot in a png file
+    figGreen = plt.savefig('f1GreenNormExp.png')
+    plt.close(figGreen)
+
+    # Plot the data for red
+    plt.plot(timeR, f1RedRed)
+    plt.plot(timeR, fitRed)
+    plt.xlabel('Time')
+    plt.ylabel('Fluorescence')
+    plt.title('Red Normalized to Exponential')
+
+    # Save the plot in a png file
+    figRed = plt.savefig('f1RedNormExp.png')
     plt.close(figRed)
 
