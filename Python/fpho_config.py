@@ -46,6 +46,9 @@ def main():
     if config['plot_iso_fit'] == True:
         fpho_setup.plot_1fiber_norm_iso(fpho_df)
 
+    # Prints fitted exponent if specified
+    if config['plot_fit_exp'] == True:
+        fpho_setup.plot_1fiber_norm_fitted(fpho_df)
 
 if __name__ == '__main__':
     main()

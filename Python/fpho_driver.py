@@ -92,7 +92,6 @@ def main():
 
     parser.add_argument('--plot_fit_exp',
                         dest='plot_fit_exp',
-                        # type=bool,
                         action='store_true',
                         help='Type 1 to plot fitted exponent')
 

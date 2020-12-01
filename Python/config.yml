@@ -1,3 +1,6 @@
+# To run this file, enter this command into the terminal:
+# python fpho_config.py --config config.yml
+
 #  Name of input file containing fiber photometry data (string)
 input_filename: "SynchronyData/FiberPhoSig2020-10-12T15_30_41.csv"
 
@@ -19,3 +22,6 @@ plot_raw_signal: False
 
 # To plot the isosbestic fit, set True (otherwise False)
 plot_iso_fit: False
+
+# To plot the fitted exponent, set True (otherwise False)
+plot_fit_exp: False
