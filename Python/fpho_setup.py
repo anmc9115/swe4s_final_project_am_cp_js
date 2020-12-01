@@ -18,6 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 from scipy.optimize import curve_fit
+import csv
 
 driver_version = 'v2.0'
 
@@ -34,6 +35,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         output_filename: string
                          file path and name for output csv
 
+        ## TO DO: Add metadata columns to output
         Returns:
         --------
         twofiber_fdata: list
@@ -49,6 +51,17 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                            fTimeIso, fTimeRed, fTimeGreen
                 name depcits fiber number, channel, color
         """
+
+    # Open file, catch errors
+    try:
+        file = open(input_filename, 'r')
+        header = None
+    except FileNotFoundError:
+        print("Could not find file: " + input_filename)
+        sys.exit(1)
+    except PermissionError:
+        print("Could not access file: " + input_filename)
+        sys.exit(2)
 
     # User input to indicate one fiber or two fiber data
     fiber_val = input("\nOne fiber or two fiber input data?\n"
@@ -152,17 +165,6 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     f2Red = []
     f2Green = []
 
-    # Open file, catch errors
-    try:
-        file = open(input_filename, 'r')
-        header = None
-    except FileNotFoundError:
-        print("Could not find file: " + input_filename)
-        sys.exit(1)
-    except PermissionError:
-        print("Could not access file: " + input_filename)
-        sys.exit(2)
-
     for line in file:
         if header is None:
             header = line
@@ -248,11 +250,6 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
 
         # Dictionary to dataframe
         twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
-
-        # If writing to txt is better for some reason, we can use this code
-        # f = open("dict.txt","w")
-        # f.write( str(twofiber_dict) )
-        # f.close()
 
         # Dataframe to output csv
         output_csv = output_filename + '.csv'
@@ -410,6 +407,7 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
         # outputs raw sig plot as png file
         rawsig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
         plt.savefig(rawsig_file_name, bbox_inches='tight')
+        plt.close()
 
 
 def plot_1fiber_norm_iso(fpho_dataframe):
