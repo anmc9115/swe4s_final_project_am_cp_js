@@ -9,7 +9,7 @@ pho_setup_DF = fpho_setup.import_fpho_data(animal_ID='vole1',
                                            input_filename='SampleData/1fiberSignal.csv',
                                            output_filename='test.csv')
 
-# metadata_file = fpho_setup.make_summary_file(animal_num='1', exp_desc = 'Prairie dogs hanging out',exp_yyyy_mm_dd = "2000-12-01", summarycsv_name="summary.csv")
+# metadata_file = fpho_setup.make_summary_file(animal_num='1', exp_desc = 'Prairie voles hanging out',exp_yyyy_mm_dd = "2000-12-01", summarycsv_name="summary.csv")
 # print(metadata_file)
 
 # print(pd.DataFrame.head(pho_setup_DF))

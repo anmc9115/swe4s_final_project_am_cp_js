@@ -262,6 +262,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     else:
         # Everything into a dictionary
         onefiber_dict = {'f1GreenIso': [f1GreenIso],
+                         'f1GreenRed' : [f1GreenRed],
                          'f1GreenGreen': [f1GreenGreen],
                          'f1RedIso': [f1RedIso],
                          'f1RedRed': [f1RedRed],
@@ -274,9 +275,14 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         # Dictionary to dataframe
         onefiber_fdata = pd.DataFrame(onefiber_dict)
 
+        # TEST, print df
+#         pd.set_option('display.max_columns', None)
+#         print(onefiber_fdata.head())
+
         # Dataframe to output csv
         onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
         print('Output CSV written to ' + output_filename)
+
         return onefiber_fdata
 
 
