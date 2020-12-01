@@ -34,6 +34,8 @@ def main():
     plot_iso_fit: boolean
                   optional isosbestic plot
 
+    plot_fit_exp: boolean
+                  optional fitted exponent plot
 
     Returns
     -------
@@ -86,6 +88,12 @@ def main():
                         action='store_true',
                         help='Type 1 to plot iso fitted trace')
 
+    parser.add_argument('--plot_fit_exp',
+                        dest='plot_fit_exp',
+                        # type=bool,
+                        action='store_true',
+                        help='Type 1 to plot fitted exponent')
+
     args = parser.parse_args()
 
     # Generate the dataframe with data
@@ -102,6 +110,10 @@ def main():
     # Prints isosbestic fit if specified
     if args.plot_iso_fit:
         fpho_setup.plot_1fiber_norm_iso(fpho_df)
+
+    # Prints fitted exponent if specified
+    if args.plot_fit_exp:
+        fpho_setup.plot_1fiber_norm_fitted(fpho_df)
 
 
 if __name__ == '__main__':
