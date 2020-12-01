@@ -1,0 +1,1 @@
+python fpho_driver.py --input_filename SynchronyData/FiberPhoSig2020-10-12T15_30_41.csv --output_filename T15_30_41 --animal_ID 1234 --exp_date '2020-11-22' --exp_desc 'synchrony test'
