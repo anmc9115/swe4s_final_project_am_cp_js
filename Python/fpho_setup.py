@@ -255,8 +255,9 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         # f.close()
 
         # Dataframe to output csv
-        twofiber_fdata.to_csv(output_filename, index=None, na_rep='')
-        print('Output CSV written to ' + output_filename)
+        output_csv = output_filename + '.csv'
+        twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
+        print('Output CSV written to ' + output_csv)
         return twofiber_fdata
 
     else:
@@ -275,13 +276,10 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         # Dictionary to dataframe
         onefiber_fdata = pd.DataFrame(onefiber_dict)
 
-        # TEST, print df
-#         pd.set_option('display.max_columns', None)
-#         print(onefiber_fdata.head())
-
         # Dataframe to output csv
-        onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
-        print('Output CSV written to ' + output_filename)
+        output_csv = output_filename + '.csv'
+        onefiber_fdata.to_csv(output_csv, index=False, na_rep='')
+        print('Output CSV written to ' + output_csv)
 
         return onefiber_fdata
 
