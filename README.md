@@ -22,6 +22,15 @@ git clone https://github.com/anmc9115/swe4s_final_project_am_cp_js.git
       `python fpho_config.py --config config.yml`
 8. A summary CSV along with any plots from analysis will be output to the working directory
 
+## Example Plots
+### Raw Signal Trace
+
+### Normalized Signal to Isosbestic
+
+### Normalized Signal to Biexponential Fit
+
+### Z-score Plot for Behavior 
+
 ## Release History
 
 * v1.0
