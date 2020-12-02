@@ -1,21 +1,25 @@
-# To run this file, enter this command into the terminal:
+# USER DIRECTIONS ------------------------------------------
+# Update the following parameters for your analysis
+# When complete, run this file by entering the following 
+# command into the terminal:
 # python fpho_config.py --config config.yml
+# ----------------------------------------------------------
 
-#  Name of input file containing fiber photometry data (string)
+# REQUIRED FIBERPHO INPUTS ---------------------------------
+#  Name/file path for file containing fiberpho data from Bonsai (string)
 input_filename: "SynchronyData/FiberPhoSig2020-10-12T15_30_41.csv"
 
-#  Name you'd like for the output CSV file. Should include
-# file path if different than current file (string)
-output_filename: "T15_30_41"
+# Name for output files including summary csv and plots 
+output_filename: "my_file_name"
 
 #  Number of the animal corresponding to fluoresence data (int)
 animal_ID: "1234" 
 
-# Date of exp/date data was gathered (string, form: YYYY-MM-DD)           
+# Date of data collection (string, form: YYYY-MM-DD)           
 exp_date: "2020-11-22" 
 
 # Brief explantation of experiment (string)
-exp_desc: "synchrony test"
+exp_desc: "my experiment was about ..."
 
 # To plot the raw signal trace, set True (otherwise False)
 plot_raw_signal: False
@@ -25,3 +29,18 @@ plot_iso_fit: False
 
 # To plot the fitted exponent, set True (otherwise False)
 plot_fit_exp: False
+
+# ----------------------------------------------------------
+
+# BEHAVIOR ANALYSIS ----------------------------------------
+# If not using, leave import as False and other fields empty
+
+# To import behavior data, set True (otherwise False)
+import_behavior: False
+
+# Name of BORIS file containing behavior data
+BORIS_file:
+
+# Name of timestamp file corresponding to behavior video
+timestamp_file:
+#------------------------------------------------------------

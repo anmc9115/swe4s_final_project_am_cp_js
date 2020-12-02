@@ -1,9 +1,10 @@
-"""This file runs the functions in the fpho_setup library """
-
+"""This file runs the functions in the fpho_setup library"""
 import argparse
 import sys
 import fpho_setup
 import yaml
+import behavior_setup
+import pandas as pd
 
 
 def main():
@@ -12,7 +13,7 @@ def main():
     Parameters
     ----------
     config.yml
-        To use this driver update the config.yml file, then
+        To use this driver, update the config.yml file, then
         run the following bash command: 
         python fpho_config.py --config config.yml
     
@@ -20,6 +21,7 @@ def main():
     -------
     Pandas dataframe of parsed fiber photometry data
     Writes an output CSV to specified file name
+    Outputs specified plots and analysis
     """
     # use with config.yml
     parser = argparse.ArgumentParser()
@@ -49,6 +51,13 @@ def main():
     # Prints fitted exponent if specified
     if config['plot_fit_exp'] == True:
         fpho_setup.plot_1fiber_norm_fitted(fpho_df)
+       
+    # Imports behavior data if specified
+    behaviorData = pd.DataFrame() 
+    if config['import_behavior'] == True:
+        behaviorData = behavior_setup.import_behavior_data(config['BORIS_file'],
+                                                           config['timestamp_file'])
 
+        
 if __name__ == '__main__':
     main()

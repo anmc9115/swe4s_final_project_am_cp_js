@@ -5,32 +5,75 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def import_behavior_data(animal_ID, exp_date, exp_desc,
-                         input_filename, output_filename):
+def import_behavior_data(BORIS_filename, timestamp_filename):
     """Takes a file name, returns a dataframe of parsed data
 
         Parameters
         ----------
-        input_filename: string
+        BORIS_filename: string
                         The path to the CSV file
-
-        output_filename: string
-                         file path and name for output csv
 
         Returns:
         --------
-        twofiber_fdata: list
-                containing f1GreenIso, f1GreenRed, f1GreenGreen,
-                           f2GreenIso, f2GreenRed, f2GreenGreen,
-                           f1RedIso, f1RedRed, f1RedGreen,
-                           f2RedIso, f2RedRed, f2RedGreen,
-                           fTimeIso, fTimeRed, fTimeGreen
-                name depcits fiber number, channel, color
-        onefiber_fdata: list
-                containing f1GreenIso, f1GreenRed, f1GreenGreen,
-                           f1RedIso, f1RedRed, f1RedGreen,
-                           fTimeIso, fTimeRed, fTimeGreen
-                name depcits fiber number, channel, color
+        behaviorData: pandas dataframe
+                contains:
+                     Time(total msec), Time(sec), Subject,
+                     Behavior, Status
         """
+    # Open file, catch errors
+    try:
+        BORISData = pd.read_csv(BORIS_filename, header=15)  # starts at data
+    except FileNotFoundError:
+        print("Could not find file: " + BORIS_filename)
+        sys.exit(1)
+    except PermissionError:
+        print("Could not access file: " + BORIS_filename)
+        sys.exit(2)
 
-def plot_zscore()
+    # Drop unecessary columns
+    behaviorData = BORISData.drop(['Media file path', 'Total length', 'FPS',
+                                   'Behavioral category', 'Comment'], axis=1)
+
+    # Find timestamp corresponding to time 0sec of video
+    try:
+        timestamp_df = pd.read_csv(timestamp_filename, nrows=1)
+    except FileNotFoundError:
+        print("Could not find file: " + timestamp_filename)
+        sys.exit(1)
+    except PermissionError:
+        print("Could not access file: " + timestamp_filename)
+        sys.exit(2)
+    timestamp = timestamp_df.to_numpy()[0][0]
+
+    # Add time in msec to dataframe
+    sec_times = behaviorData['Time'].tolist()
+    msec_times_day = []
+    # convert to msec, adjust to timestamp
+    for sec_time in sec_times:
+        msec_time = sec_time*1000
+        msec_adjusted = (msec_time + timestamp)
+        msec_times_day.append(msec_adjusted)
+    behaviorData.insert(0, 'Time (total msec)', msec_times_day)
+
+    return(behaviorData)
+
+
+def plot_zscore(behaviorData, zplot_filename):
+    """Takes a file name, returns a dataframe of parsed data
+
+        Parameters
+        ----------
+        behaviorData: pandas dataframe
+                contains:
+                    Time(total msec), Time(sec), Subject,
+                    Behavior, Status
+        zplot_filename: string
+                name of the output png file
+
+        Returns:
+        --------
+        zplot_filename: png file
+                plot of the avg zscores for behavioral
+                occurances
+    """
+    return
