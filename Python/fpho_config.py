@@ -14,9 +14,9 @@ def main():
     ----------
     config.yml
         To use this driver, update the config.yml file, then
-        run the following bash command: 
+        run the following bash command:
         python fpho_config.py --config config.yml
-    
+
     Returns
     -------
     Pandas dataframe of parsed fiber photometry data
@@ -41,23 +41,27 @@ def main():
                                           exp_desc=config['exp_desc'])
 
     # Plot raw signal if specified in commandline
-    if config['plot_raw_signal'] == True:
+    if config['plot_raw_signal'] is True:
         fpho_setup.raw_signal_trace(fpho_df, config['output_filename'])
 
-    # Prints isosbestic fit if specified
-    if config['plot_iso_fit'] == True:
-        fpho_setup.plot_1fiber_norm_iso(fpho_df)
+    # Plots isosbestic fit if specified
+    if config['plot_iso_fit'] is True:
+        fpho_setup.plot_isosbestic_norm(fpho_df, config['output_filename'])
 
-    # Prints fitted exponent if specified
-    if config['plot_fit_exp'] == True:
-        fpho_setup.plot_1fiber_norm_fitted(fpho_df)
-       
+    # Plots fitted exponent if specified
+    if config['plot_fit_exp'] is True:
+        fpho_setup.plot_fitted_exp(fpho_df, config['output_filename'])
+
     # Imports behavior data if specified
-    behaviorData = pd.DataFrame() 
-    if config['import_behavior'] == True:
+    behaviorData = pd.DataFrame()
+    if config['import_behavior'] is True:
         behaviorData = behavior_setup.import_behavior_data(config['BORIS_file'],
                                                            config['timestamp_file'])
 
-        
+    # Plots z-score analysis of behavior if specified
+    if config['plot_zscore'] is True:
+        behavior_setup.plot_zscore(behaviorData, config['output_filename'])
+
+
 if __name__ == '__main__':
     main()

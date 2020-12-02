@@ -1,12 +1,8 @@
 """Library of functions for fpho_driver
-
     * import_fpho_data - saves data from csv in lists
     * make_summary_file - outputs txt file of summary info
-    * plot_1fiber_norm_fitted - Plots 1 fiber normalized fitted exponenent
-    * plot_2fiber_norm_fitted - Plots 2 fiber normalized fitted exponenent
-    * plot_1fiber_norm_iso - Plots 1 fiber normalized isosbestic fit
-    * plot_2fiber_norm_iso - PLots 2 fiber normalized isosbestic fit
-
+    * plot_fitted_exp - Plots 1 fiber normalized fitted exponenent
+    * plot_isosbestic_norm - Plots 1 fiber normalized isosbestic fit
 """
 
 # Claire to-do: Add warning message when columns are different lengths
@@ -277,7 +273,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
 
         # Dataframe to output csv
-        output_csv = output_filename + '.csv'
+        output_csv = output_filename + '_Summary.csv'
         twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
         print('Output CSV written to ' + output_csv)
         return twofiber_fdata
@@ -315,56 +311,10 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         onefiber_fdata = pd.DataFrame(onefiber_dict)
 
         # Dataframe to output csv
-        output_csv = output_filename + '.csv'
+        output_csv = output_filename + '_Summary.csv'
         onefiber_fdata.to_csv(output_csv, index=False)
         print('Output CSV written to ' + output_csv)
         return onefiber_fdata
-
-
-def make_summary_file(animal_ID, exp_date, exp_desc, summarycsv_name=None):
-
-    """Creates a file that holds metadata about the primary input file
-
-        Parameters
-        ----------
-        animal_ID: integer
-                   Number ID for the animal
-        exp_date: string
-                  Date of the experiment
-        exp_desc: string
-                  Brief description of experiment
-        summarycsv_name: optional string
-                         file path for output txt
-
-        Returns:
-        --------
-        summary_info: text file
-            file containing: version, animal_num, date, exp,
-
-    """
-
-    # Check data format
-    try:
-        datetime.datetime.strptime(exp_date, '%Y-%m-%d')
-    except ValueError:
-        print('Date {'+exp_date+'} not entered in correct format.'
-              + ' Please re-enter in YYYY-MM-DD format.')
-        # raise ValueError
-        sys.exit(1)  # Change this to raise value error when using driver file?
-
-    # Create metadata dictionary
-    info = {'Animal ID number': [animal_ID],
-            'Date': [exp_date],
-            'Brief description': [exp_desc]}
-
-    # Dictionary to DF
-    metadata_df = pd.DataFrame.from_dict(info)
-
-    # If user wants, write to csv
-    if summarycsv_name is not None:
-        metadata_df.to_csv(summarycsv_name, index=False)
-
-    return metadata_df
 
 
 def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
@@ -450,17 +400,19 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
             plt.gca().spines['top'].set_color('none')
             
         # outputs raw sig plot as png file
-        rawsig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
+        rawsig_file_name = output_filename + '_RawSignal_' + channel + '.png'
         plt.savefig(rawsig_file_name, bbox_inches='tight')
         plt.close()
 
 
-def plot_1fiber_norm_iso(fpho_dataframe):
+def plot_isosbestic_norm(fpho_dataframe, output_filename):
     """Creates a plot normalizing 1 fiber data to the isosbestic
         Parameters
         ----------
         fpho_dataframe: string
                 Pandas dataframe
+        output_filename: string
+                         file path and name for output csv
         Returns:
         --------
         f1GreenNorm.png and f1RedNorm.png: png file
@@ -572,7 +524,8 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     plt.title('Green Normalized to Isosbestic')
 
     # Save the plot in a png file
-    figGreen = plt.savefig('f1GreenNormIso.png')
+    green_iso_plot_name = output_filename + '_f1GreenNormIso.png'
+    figGreen = plt.savefig(green_iso_plot_name)
     plt.close(figGreen)
 
     # Plot the data for red
@@ -580,7 +533,8 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     plt.title('Red Normalized to Isosbestic')
 
     # Save the plot in a png file
-    figRed = plt.savefig('f1RedNormIso.png')
+    red_iso_plot_name = output_filename + '_f1RedNormIso.png'
+    figRed = plt.savefig(red_iso_plot_name)
     plt.close(figRed)
 
 
@@ -602,7 +556,7 @@ def fit_exp(values, a, b, c, d):
     return a * np.exp(b * values) + c * np.exp(d * values)
 
 
-def plot_1fiber_norm_fitted(fpho_dataframe):
+def plot_fitted_exp(fpho_dataframe, output_filename):
     """Creates a plot normalizing 1 fiber data to an
     exponential of the form y=A*exp(-B*X)+C*exp(-D*x).
 
@@ -610,6 +564,8 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
         ----------
         fpho_dataframe: string
                 Pandas dataframe
+        output_filename: string
+                         file path and name for output csv
         Returns:
         --------
         f1GreenNormExp.png and f1RedNormExp.png: png file
@@ -707,7 +663,8 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
     plt.title('Green Normalized to Exponential')
 
     # Save the plot in a png file
-    figGreen = plt.savefig('f1GreenNormExp.png')
+    green_exp_plot_name = output_filename + '_f1GreenNormExp.png'
+    figGreen = plt.savefig(green_exp_plot_name)
     plt.close(figGreen)
 
     # Plot the data for red
@@ -718,6 +675,6 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
     plt.title('Red Normalized to Exponential')
 
     # Save the plot in a png file
-    figRed = plt.savefig('f1RedNormExp.png')
+    red_exp_plot_name = output_filename + '_f1RedNormExp.png'
+    figRed = plt.savefig(red_exp_plot_name)
     plt.close(figRed)
-

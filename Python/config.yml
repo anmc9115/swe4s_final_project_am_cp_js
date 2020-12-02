@@ -3,6 +3,7 @@
 # When complete, run this file by entering the following 
 # command into the terminal:
 # python fpho_config.py --config config.yml
+# Follow instructions in the terminal
 # ----------------------------------------------------------
 
 # REQUIRED FIBERPHO INPUTS ---------------------------------
@@ -10,6 +11,7 @@
 input_filename: "SynchronyData/FiberPhoSig2020-10-12T15_30_41.csv"
 
 # Name for output files including summary csv and plots 
+# Do not include a file type (e.g. "my_file_name")
 output_filename: "my_file_name"
 
 #  Number of the animal corresponding to fluoresence data (int)
@@ -22,13 +24,13 @@ exp_date: "2020-11-22"
 exp_desc: "my experiment was about ..."
 
 # To plot the raw signal trace, set True (otherwise False)
-plot_raw_signal: False
+plot_raw_signal: True
 
 # To plot the isosbestic fit, set True (otherwise False)
-plot_iso_fit: False
+plot_iso_fit: True
 
 # To plot the fitted exponent, set True (otherwise False)
-plot_fit_exp: False
+plot_fit_exp: True
 
 # ----------------------------------------------------------
 
@@ -43,4 +45,8 @@ BORIS_file:
 
 # Name of timestamp file corresponding to behavior video
 timestamp_file:
+
+# To plot the z-score analysis, set True (otherwise False)
+plot_zscore: False
+
 #------------------------------------------------------------
