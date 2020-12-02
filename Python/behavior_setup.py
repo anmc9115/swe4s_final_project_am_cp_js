@@ -77,3 +77,5 @@ def plot_zscore(behaviorData, zplot_filename):
                 occurances
     """
     return
+    # built in zscore function? 
+    # don't pick a baseline, instead use the mean (of the clip) as the baseline
