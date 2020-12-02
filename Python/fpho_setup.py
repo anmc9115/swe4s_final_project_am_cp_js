@@ -32,10 +32,18 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         input_filename: string
                         The path to the CSV file
 
+        animal_ID: integer?
+                   Unique animal ID #
+
+        exp_date: YYYY_MM_DD
+                  Date data was gathered
+
+        exp_desc: string
+                  Brief description of data
+
         output_filename: string
                          file path and name for output csv
 
-        ## TO DO: Add metadata columns to output
         Returns:
         --------
         twofiber_fdata: list
@@ -43,12 +51,15 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                            f2GreenIso, f2GreenRed, f2GreenGreen,
                            f1RedIso, f1RedRed, f1RedGreen,
                            f2RedIso, f2RedRed, f2RedGreen,
-                           fTimeIso, fTimeRed, fTimeGreen
-                name depcits fiber number, channel, color
+                           fTimeIso, fTimeRed, fTimeGreen,
+                           animal_ID, exp_date, exp_desc
+                           ** name depcits fiber number, channel, color
+
         onefiber_fdata: list
                 containing f1GreenIso, f1GreenRed, f1GreenGreen,
                            f1RedIso, f1RedRed, f1RedGreen,
-                           fTimeIso, fTimeRed, fTimeGreen
+                           fTimeIso, fTimeRed, fTimeGreen,
+                           animal_ID, exp_date, exp_desc
                 name depcits fiber number, channel, color
         """
 
@@ -83,7 +94,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
               + " Please enter <1> or <2> or press any letter to exit.")
         fiber_val = input()
         if type(fiber_val) != int:
-            sys.exit()
+            sys.exit(1)
 
     # User input to find out which column contains info for the f1Red channel
     f1Red_col = input("\nWhich column contains f1Red information? "
@@ -99,7 +110,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         f1Red_col = input("Which column contains f1Red information?\n"
                           + "Enter <3> or <4>, or press any letter to exit: ")
         if type(f1Red_col) != int:
-            sys.exit()
+            sys.exit(1)
 
     if f1Red_col == 3:
         f1Green_col = 4
@@ -214,11 +225,6 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
-    # Create metadata file to put into last column of output dataframe
-    metadata = make_summary_file(animal_ID=animal_ID,
-                                 exp_date=exp_date,
-                                 exp_desc=exp_desc)
-
     if fiber_val == 2:
         # Second fiber, green
         f2GreenIso = f2Green[greenIdX::3]
@@ -229,6 +235,23 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         f2RedIso = f2Red[greenIdX::3]
         f2RedRed = f2Red[redIdX::3]
         f2RedGreen = f2Red[isoIdX::3]
+
+        # Create list of all column names
+        colnames = ['f1GreenIso', 'f1GreenRed', 'f1GreenGreen',
+                    'f1RedIso', 'f1RedGreen', 'f1RedRed',
+                    'f2GreenIso', 'f2GreenRed', 'f2GreenGreen',
+                    'f2RedIso', 'f2RedGreen', 'f2RedRed',
+                    'fTimeIso', 'fTimeRed', 'fTimeGreen']
+
+        # Set arbitrarily large column length
+        collength = 100**10
+
+        # Find minimum column length by comparing
+        # last value to length of current column.
+        # Use to crop lists in output dataframe
+
+        for name in colnames:
+            collength = min(collength, len(eval(name)))
 
         # Everything into a dictionary
         twofiber_dict = {'f1GreenIso': [f1GreenIso],
@@ -246,7 +269,9 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                          'fTimeIso': [fTimeIso],
                          'fTimeRed': [fTimeRed],
                          'fTimeGreen': [fTimeGreen],
-                         'metadata': [metadata]}
+                         'animalID': [animal_ID],
+                         'date': [exp_date],
+                         'description': [exp_desc]}
 
         # Dictionary to dataframe
         twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
@@ -258,26 +283,41 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         return twofiber_fdata
 
     else:
-        # Everything into a dictionary
-        onefiber_dict = {'f1GreenIso': [f1GreenIso],
-                         'f1GreenRed' : [f1GreenRed],
-                         'f1GreenGreen': [f1GreenGreen],
-                         'f1RedIso': [f1RedIso],
-                         'f1RedRed': [f1RedRed],
-                         'f1RedGreen': [f1RedGreen],
-                         'fTimeIso': [fTimeIso],
-                         'fTimeRed': [fTimeRed],
-                         'fTimeGreen': [fTimeGreen],
-                         'metadata': [metadata]}
+
+        # Create list of all column names
+        colnames = ['f1GreenIso', 'f1GreenRed', 'f1GreenGreen',
+                    'f1RedIso', 'f1RedGreen', 'f1RedRed',
+                    'fTimeIso', 'fTimeRed', 'fTimeGreen']
+
+        # Set arbitrarily large column length
+        collength = 100**10
+
+        # Find minimum column length. Use to crop lists in output dataframe
+        for name in colnames:
+            collength = min(collength, len(eval(name)))
+
+        # Everything into a dictionary.
+        # Columns of raw data cropped to the same lengths
+        onefiber_dict = {'f1GreenIso': [f1GreenIso[0:collength]],
+                         'f1GreenRed': [f1GreenRed[0:collength]],
+                         'f1GreenGreen': [f1GreenGreen[0:collength]],
+                         'f1RedIso': [f1RedIso[0:collength]],
+                         'f1RedRed': [f1RedRed[0:collength]],
+                         'f1RedGreen': [f1RedGreen[0:collength]],
+                         'fTimeIso': [fTimeIso[0:collength]],
+                         'fTimeRed': [fTimeRed[0:collength]],
+                         'fTimeGreen': [fTimeGreen[0:collength]],
+                         'animalID': [animal_ID],
+                         'date': [exp_date],
+                         'description': [exp_desc]}
 
         # Dictionary to dataframe
         onefiber_fdata = pd.DataFrame(onefiber_dict)
 
         # Dataframe to output csv
         output_csv = output_filename + '.csv'
-        onefiber_fdata.to_csv(output_csv, index=False, na_rep='')
+        onefiber_fdata.to_csv(output_csv, index=False)
         print('Output CSV written to ' + output_csv)
-
         return onefiber_fdata
 
 
@@ -376,34 +416,39 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
     for channel in channel_list:
 
         if 'f1Red' in str(channel):
-            channel = "f1RedRed"
+            channels = ["f1RedRed"]
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f2Red' in str(channel):
-            channel = "f2RedRed"
+            channels = ["f2RedRed"]
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f1Green' in str(channel):
-            channel = "f1GreenGreen"
+            channels = ["f1GreenGreen","f1GreenIso"]
             time_col = 'fTimeGreen'
             l_color = "g"
         if 'f2Green' in str(channel):
-            channel = "f2GreenGreen"
+            channels = ["f2GreenGreen","f2GreenIso"]
             time_col = 'fTimeGreen'
             l_color = "g"
 
-        channel_data = df[channel].values[data_row_index]
-        time_data = df[time_col].values[data_row_index]
+        fig = plt.figure(figsize=(7*len(channels), 6),facecolor='w',
+                        edgecolor='k',dpi=300)
 
-        # Initialize plot, add data and title
-        plt.figure()
-        plt.plot(time_data, channel_data, color=l_color)
-        plt.title(str(channel))
+        for i in range(0,len(channels)):
 
-        # Remove top and right borders
-        plt.gca().spines['right'].set_color('none')
-        plt.gca().spines['top'].set_color('none')
+            channel_data = df[channels[i]].values[data_row_index]
+            time_data = df[time_col].values[data_row_index]
 
+            # Initialize plot, add data and title
+            ax=fig.add_subplot(1,len(channels),1+i)
+            ax.plot(time_data, channel_data, color=l_color)
+            ax.set_title(str(channels[i]))
+
+            # Remove top and right borders
+            plt.gca().spines['right'].set_color('none')
+            plt.gca().spines['top'].set_color('none')
+            
         # outputs raw sig plot as png file
         rawsig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
         plt.savefig(rawsig_file_name, bbox_inches='tight')
