@@ -34,11 +34,16 @@ def main():
     f.close()
 
     # Generate the dataframe with data
-    fpho_df = fpho_setup.import_fpho_data(input_filename=config['input_filename'],
-                                          output_filename=config['output_filename'],
-                                          animal_ID=config['animal_ID'],
-                                          exp_date=config['exp_date'],
-                                          exp_desc=config['exp_desc'])
+    fpho_df = fpho_setup.import_fpho_data(input_filename=(
+                                              config['input_filename']),
+                                          output_filename=(
+                                              config['output_filename']),
+                                          animal_ID=(
+                                              config['animal_ID']),
+                                          exp_date=(
+                                              config['exp_date']),
+                                          exp_desc=(
+                                              config['exp_desc']))
 
     # Plot raw signal if specified in commandline
     if config['plot_raw_signal'] is True:
@@ -55,8 +60,9 @@ def main():
     # Imports behavior data if specified
     behaviorData = pd.DataFrame()
     if config['import_behavior'] is True:
-        behaviorData = behavior_setup.import_behavior_data(config['BORIS_file'],
-                                                           config['timestamp_file'])
+        behaviorData = behavior_setup.import_behavior_data(
+                                            config['BORIS_file'],
+                                            config['timestamp_file'])
 
     # Plots z-score analysis of behavior if specified
     if config['plot_zscore'] is True:
