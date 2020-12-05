@@ -20,7 +20,7 @@ driver_version = 'v2.0'
 
 
 def import_fpho_data(animal_ID, exp_date, exp_desc,
-                     input_filename, output_filename):
+                     input_filename, output_filename, write_xlsx=False):
     """Takes a file name, returns a dataframe of parsed data
 
         Parameters
@@ -276,6 +276,12 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         output_csv = output_filename + '_Summary.csv'
         twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
         print('Output CSV written to ' + output_csv)
+
+        if write_xlsx is True:
+            output_xlsx = output_filename + 'Summary.xlsx'
+            twofiber_fdata.to_excel(output_xlsx, index=False)
+            print('Output excel file written to ' + "output_xlsx")
+
         return twofiber_fdata
 
     else:
@@ -292,8 +298,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         for name in colnames:
             collength = min(collength, len(eval(name)))
 
-        # Everything into a dictionary.
-        # Columns of raw data cropped to the same lengths
+        # Everything into a dictionary
         onefiber_dict = {'f1GreenIso': [f1GreenIso[0:collength]],
                          'f1GreenRed': [f1GreenRed[0:collength]],
                          'f1GreenGreen': [f1GreenGreen[0:collength]],
@@ -308,12 +313,19 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                          'description': [exp_desc]}
 
         # Dictionary to dataframe
-        onefiber_fdata = pd.DataFrame(onefiber_dict)
+        onefiber_fdata = pd.DataFrame.from_dict(onefiber_dict)
+        print(onefiber_fdata)
 
         # Dataframe to output csv
         output_csv = output_filename + '_Summary.csv'
         onefiber_fdata.to_csv(output_csv, index=False)
-        print('Output CSV written to ' + output_csv)
+        print('Output CSV written to ' + "output_csv")
+
+        if write_xlsx is True:
+            output_xlsx = output_filename + 'Summary.xlsx'
+            onefiber_fdata.to_excel(output_xlsx, index=False)
+            print('Output excel file written to ' + "output_xlsx")
+
         return onefiber_fdata
 
 
@@ -374,31 +386,33 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f1Green' in str(channel):
-            channels = ["f1GreenGreen","f1GreenIso"]
+            channels = ["f1GreenGreen", "f1GreenIso"]
             time_col = 'fTimeGreen'
             l_color = "g"
         if 'f2Green' in str(channel):
-            channels = ["f2GreenGreen","f2GreenIso"]
+            channels = ["f2GreenGreen", "f2GreenIso"]
             time_col = 'fTimeGreen'
             l_color = "g"
 
-        fig = plt.figure(figsize=(7*len(channels), 6),facecolor='w',
-                        edgecolor='k',dpi=300)
+        fig = plt.figure(figsize=(7*len(channels), 6),
+                         facecolor='w',
+                         edgecolor='k',
+                         dpi=300)
 
-        for i in range(0,len(channels)):
+        for i in range(0, len(channels)):
 
             channel_data = df[channels[i]].values[data_row_index]
             time_data = df[time_col].values[data_row_index]
 
             # Initialize plot, add data and title
-            ax=fig.add_subplot(1,len(channels),1+i)
+            ax = fig.add_subplot(1, len(channels), 1+i)
             ax.plot(time_data, channel_data, color=l_color)
             ax.set_title(str(channels[i]))
 
             # Remove top and right borders
             plt.gca().spines['right'].set_color('none')
             plt.gca().spines['top'].set_color('none')
-            
+
         # outputs raw sig plot as png file
         rawsig_file_name = output_filename + '_RawSignal_' + channel + '.png'
         plt.savefig(rawsig_file_name, bbox_inches='tight')
@@ -626,7 +640,7 @@ def plot_fitted_exp(fpho_dataframe, output_filename):
     timeG = []
     for i in range(len(f1GreenTime)):
         timeG.append(f1GreenTime[i] - f1GreenTime[0])
-    
+
     timeR = []
     for i in range(len(f1RedTime)):
         timeR.append(f1RedTime[i] - f1RedTime[0])
@@ -636,20 +650,20 @@ def plot_fitted_exp(fpho_dataframe, output_filename):
     # inputs for p0) must be negative, while A and C (the
     # first and third inputs for p0) must be positive
     popt, pcov = curve_fit(fit_exp, timeG, f1GreenGreen,
-                            p0=(1.0,-0.001,1.0,-0.001), maxfev=500000)
+                           p0=(1.0, -0.001, 1.0, -0.001), maxfev=500000)
 
-    AG = popt[0] # A value
-    BG = popt[1] # B value
-    CG = popt[2] # C value
-    DG = popt[3] # D value
+    AG = popt[0]  # A value
+    BG = popt[1]  # B value
+    CG = popt[2]  # C value
+    DG = popt[3]  # D value
 
     popt, pcov = curve_fit(fit_exp, timeR, f1RedRed,
-                            p0=(1.0,-0.001,1.0,-0.001), maxfev=500000)
+                           p0=(1.0, -0.001, 1.0, -0.001), maxfev=500000)
 
-    AR = popt[0] # A value
-    BR = popt[1] # B value
-    CR = popt[2] # C value
-    DR = popt[3] # D value
+    AR = popt[0]  # A value
+    BR = popt[1]  # B value
+    CR = popt[2]  # C value
+    DR = popt[3]  # D value
 
     # Generate fit line using calculated coefficients
     fitGreen = fit_exp(timeG, AG, BG, CG, DG)
