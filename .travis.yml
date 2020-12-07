@@ -13,7 +13,6 @@ before_install:
     - conda install --yes numpy
     - conda install --yes matplotlib
     - conda install --yes pandas
-    - conda install --yes csv
     - conda install --yes statistics
     - conda install --yes datetime
     - conda install --yes scipy.optimize
