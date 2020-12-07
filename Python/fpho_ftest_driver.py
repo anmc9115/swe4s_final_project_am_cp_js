@@ -4,7 +4,6 @@ import argparse
 import sys
 import fpho_setup
 
-
 def main():
     """Runs functions in fpho_setup, asks for what analysis to perform
 

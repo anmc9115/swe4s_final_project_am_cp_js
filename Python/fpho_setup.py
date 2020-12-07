@@ -152,7 +152,7 @@ def import_fpho_data(input_filename, output_filename,
             sys.exit(1)
 
         # Catch error: f1green col entry 5 or 6
-        if f1greencol not in [5, 5]:
+        if f2greencol not in [5, 6]:
             print("\nError: Integer entered for f2Green column index <"
                   + str(f2greencol) + "> was invalid."
                   + " Please enter 5 or 6 in integer format")
@@ -273,7 +273,7 @@ def import_fpho_data(input_filename, output_filename,
         # Dataframe to output csv
         output_csv = output_filename + '_Summary.csv'
         twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
-        print('Output CSV written to ' + output_csv + '_Summary.csv')
+        print('Output CSV written to ' + output_csv)
 
         if write_xlsx is True:
             output_xlsx = output_filename + '_Summary.xlsx'
