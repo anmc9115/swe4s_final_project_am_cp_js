@@ -9,12 +9,12 @@ before_install:
     - conda create --yes -n test
     - conda activate test
     - conda install --yes python=3.6
-    - conda install -y pycodestyle
+    - conda install -yes pycodestyle
     - conda install --yes numpy
     - conda install --yes matplotlib
     - conda install --yes pandas
-    - conda install --yes statistics
-    - conda install --yes datetime
+#   - conda install --yes statistics
+#    - conda install --yes datetime
     - conda install --yes scipy.optimize
 
 script:
