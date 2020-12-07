@@ -4,6 +4,7 @@ import fpho_setup
 import unittest
 import random
 import sys
+import pandas as pd
 
 
 class TestFphoSetup(unittest.TestCase):
@@ -35,6 +36,21 @@ class TestFphoSetup(unittest.TestCase):
                                         output_filename='testing_unit.csv')
         self.assertEqual(cm.exception.code, 1)
 
+    def test_fit_exp(self):
+        fit = fpho_setup.fit_exp([0, 0, 0, 0, 0], 1, 1, 1, 1)
+        self.assertEqual(2.0, fit[0])
+        self.assertEqual(2.0, fit[3])
+        
+        fit = fpho_setup.fit_exp([1, 5, 8, 10], 1, -1, 1, -1)
+        self.assertEqual(0.7357588823428847, fit[0])
+        self.assertEqual(9.079985952496971e-05, fit[3])
+
+#    def test_raw_signal_trace_errors(self):
+#        with self.assertRaises(SystemExit) as cm:
+#            fpho_setup.raw_signal_trace(fpho_dataframe='bad_df.csv',
+#                                        output_filename='testing_unit.png',
+#                                        data_row_index=0)
+#        self.assertEqual(cm.exception.code, 1)
 
 if __name__ == '__main__':
     unittest.main()
