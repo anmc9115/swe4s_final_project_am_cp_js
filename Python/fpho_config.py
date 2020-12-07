@@ -38,12 +38,20 @@ def main():
                                               config['input_filename']),
                                           output_filename=(
                                               config['output_filename']),
+                                          n_fibers=(
+                                              config['n_fibers']),
+                                          f1greencol=(
+                                              config['f1greencol']),
+                                          f2greencol=(
+                                              config['f2greencol']),
                                           animal_ID=(
                                               config['animal_ID']),
                                           exp_date=(
                                               config['exp_date']),
                                           exp_desc=(
-                                              config['exp_desc']))
+                                              config['exp_desc']),
+                                          write_xlsx=(
+                                               config['write_xlsx']))
 
     # Plot raw signal if specified in commandline
     if config['plot_raw_signal'] is True:
