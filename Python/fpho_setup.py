@@ -19,14 +19,30 @@ import csv
 driver_version = 'v2.0'
 
 
-def import_fpho_data(animal_ID, exp_date, exp_desc,
-                     input_filename, output_filename, write_xlsx=False):
+def import_fpho_data(input_filename, output_filename,
+                     n_fibers, f1greencol,
+                     animal_ID, exp_date, exp_desc,
+                     f2greencol=None,
+                     write_xlsx=False):
     """Takes a file name, returns a dataframe of parsed data
 
         Parameters
         ----------
         input_filename: string
                         The path to the CSV file
+
+        output_filename: string
+                         file path and name for output csv
+
+        n_fibers: integer
+                  Integer indicating 1 or 2 fiber input data
+
+        f1greencol: integer
+                    Integer of f1green column index
+
+        f2greencol: integer
+                    Integer of f2green column index
+                    Default = None
 
         animal_ID: integer?
                    Unique animal ID #
@@ -37,8 +53,6 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         exp_desc: string
                   Brief description of data
 
-        output_filename: string
-                         file path and name for output csv
 
         Returns:
         --------
@@ -70,101 +84,85 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         print("Could not access file: " + input_filename)
         sys.exit(2)
 
-    # User input to indicate one fiber or two fiber data
-    fiber_val = input("\nOne fiber or two fiber input data?\n"
-                      + "Please enter <1> if one fiber data "
-                      + "or <2> if two fiber data: ")
+    # Change None string to None keyword
+    if f2greencol == "None":
+        f2greencol = None
+    else:
+        f2greencol = f2greencol
 
+    # Catch error: number of fibers no integer
     try:
-        fiber_val = int(fiber_val)
+        n_fibers = int(n_fibers)
     except ValueError:
-        print("Error: Invalid input."
-              + "Please restart and use integer input to indicate "
+        print("Error: Invalid input for number of fibers."
+              + "Please use integer input to indicate "
               + "number of fibers represented in input data.\n")
         sys.exit(1)
 
-    while fiber_val not in [1, 2]:
+    # Catch error: number of fibers not integer 1 or 2
+    if n_fibers not in [1, 2]:
         print("Error: Integer entered for number of "
               + "fibers represented in dataset <"
-              + str(fiber_val) + "> was invalid."
-              + " Please enter <1> or <2> or press any letter to exit.")
-        fiber_val = input()
-        if type(fiber_val) != int:
-            sys.exit(1)
+              + str(n_fibers) + "> was invalid."
+              + " Please enter 1 or 2 in integer format")
+        sys.exit(1)
 
-    # User input to find out which column contains info for the f1Red channel
-    f1Red_col = input("\nWhich column contains f1Red information? "
-                      + "Please enter <3> or <4> indicating column index: ")
+    # Catch error: f1green col entry not integer
     try:
-        f1Red_col = int(f1Red_col)
+        f1greencol = int(f1greencol)
     except ValueError:
-        print("Error: Column index not entered as integer. Restarting")
+        print("\nError: f1green column index not entered as integer")
+        sys.exit(1)
 
-    while f1Red_col not in [3, 4]:
-        print("\nError: Your input <" + str(f1Red_col) + "> was invalid. "
-              + "Enter either <3> or <4> or press any letter to exit.\n")
-        f1Red_col = input("Which column contains f1Red information?\n"
-                          + "Enter <3> or <4>, or press any letter to exit: ")
-        if type(f1Red_col) != int:
+    # Catch error: f1green col entry 3 or 4
+    if f1greencol not in [3, 4]:
+        print("\nError: Integer entered for f1Green column index <"
+              + str(f1greencol) + "> was invalid."
+              + " Please enter 3 or 4 in integer format")
+        sys.exit(1)
+
+    # Catch error: Mismatched entries - 2 fibers but info for one
+    if(n_fibers == 2 and f2greencol is None):
+        print("\nError: Indicated 2 fibers in input data "
+              + "but did not provide column index for f2Green data. "
+              + "Check the config.yml file for mistmatched inputs.\n")
+        sys.exit(1)
+
+    # Catch error: Mismatched entries - 1 fiber but info for 2
+    if(n_fibers == 1 and f2greencol is not None):
+        print(n_fibers)
+        print(f2greencol)
+        print("\nError: Indicated 1 fiber in input data "
+              + "but provided column index for f2Green data. "
+              + "Check config.yml file for mismatched inputs.\n")
+        sys.exit(1)
+
+    if f1greencol == 3:
+        f1redcol = 4
+    else:
+        f1redcol = 3
+
+    if f2greencol is not None:
+
+        # Catch error: f2green col entry not integer
+        try:
+            f2greencol = int(f2greencol)
+        except ValueError:
+            print("\nError: f2green column index not entered as integer")
             sys.exit(1)
 
-    if f1Red_col == 3:
-        f1Green_col = 4
-        while True:
-            answer = input("\nYou indicated that column 3 contains f1Red"
-                           + " and column 4 contains f1Green. "
-                           + "Is that correct (yes or no)? ")
-            if answer.lower().startswith("y"):
-                break
-            elif answer.lower().startswith("n"):
-                print("You replied no. Restarting data information entry")
-                exit()
-    else:
-        f1Green_col = 3
-        while True:
-            answer = input("You indicated that column 3 contains f1Green"
-                           + " and column 4 contains f1Red. "
-                           + "Is this correct (yes or no)?\n")
-            if answer.lower().startswith("y"):
-                break
-            elif answer.lower().startswith("n"):
-                print("You replied no. Please restart")
-                sys.exit()
+        # Catch error: f1green col entry 5 or 6
+        if f1greencol not in [5, 5]:
+            print("\nError: Integer entered for f2Green column index <"
+                  + str(f2greencol) + "> was invalid."
+                  + " Please enter 5 or 6 in integer format")
+            sys.exit(1)
 
-    # Begin 2 fiber if statement to get 2 fiber column info
-    if fiber_val == 2:
-        f2Red_col = int(input("Which column contains f2Red information?\n"
-                              + "Please enter <5> or <6>:\n"))
-        while f2Red_col not in [4, 5]:
-            print("Your input", f2Red_col,
-                  "is invalid.\nEnter either <5> or <6>, or 'x' to exit.\n")
-            f2Red_col = input("Which column contains f2Red information?\n"
-                              + "Please enter <5> or <6>:\n")
-            if f2Red_col == 'x':
-                exit()
-
-        if f2Red_col == 5:
-            f2Green_col = 6
-            while True:
-                answer = input("You indicated that column 5 contains f1Red "
-                               + "and column 6 contains f1Green. "
-                               + "Is this correct (yes or no)?\n")
-                if answer.lower().startswith("y"):
-                    break
-                elif answer.lower().startswith("n"):
-                    print("You replied no. Please restart")
-                    exit()
+        # Assign f2red column index based on f2green
+        if f2greencol == 5:
+            f2redcol = 6
         else:
-            f2Green_col = 5
-            while True:
-                answer = input("You indicated that column 5 contains f1Green "
-                               + "and column 6 contains f2Red. "
-                               + "Is this correct (yes or no)?\n")
-                if answer.lower().startswith("y"):
-                    break
-                elif answer.lower().startswith("n"):
-                    print("You replied no. Please restart")
-                    exit()
+            f2redcol = 5
 
     fTime = []
     f1Red = []
@@ -178,11 +176,11 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
             continue
         columns = line.rstrip().split(' ')
         fTime.append(float(columns[0]))
-        f1Red.append(float(columns[f1Red_col-1]))
-        f1Green.append(float(columns[f1Green_col-1]))
-        if fiber_val == 2:
-            f2Red.append(float(columns[f2Red_col-1]))
-            f2Green.append(float(columns[f2Green_col-1]))
+        f1Red.append(float(columns[f1redcol-1]))
+        f1Green.append(float(columns[f1greencol-1]))
+        if n_fibers == 2:
+            f2Red.append(float(columns[f2redcol-1]))
+            f2Green.append(float(columns[f2greencol-1]))
 
     file.close()
 
@@ -221,7 +219,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
-    if fiber_val == 2:
+    if n_fibers == 2:
         # Second fiber, green
         f2GreenIso = f2Green[greenIdX::3]
         f2GreenRed = f2Green[redIdX::3]
@@ -275,10 +273,10 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         # Dataframe to output csv
         output_csv = output_filename + '_Summary.csv'
         twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
-        print('Output CSV written to ' + output_csv)
+        print('Output CSV written to ' + output_csv + '_Summary.csv')
 
         if write_xlsx is True:
-            output_xlsx = output_filename + 'Summary.xlsx'
+            output_xlsx = output_filename + '_Summary.xlsx'
             twofiber_fdata.to_excel(output_xlsx, index=False)
             print('Output excel file written to ' + "output_xlsx")
 
@@ -319,12 +317,12 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         # Dataframe to output csv
         output_csv = output_filename + '_Summary.csv'
         onefiber_fdata.to_csv(output_csv, index=False)
-        print('Output CSV written to ' + "output_csv")
+        print('Output CSV written to ' + output_csv)
 
         if write_xlsx is True:
             output_xlsx = output_filename + 'Summary.xlsx'
             onefiber_fdata.to_excel(output_xlsx, index=False)
-            print('Output excel file written to ' + "output_xlsx")
+            print('Output excel file written to ' + output_xlsx)
 
         return onefiber_fdata
 
