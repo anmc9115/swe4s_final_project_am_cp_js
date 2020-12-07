@@ -96,7 +96,7 @@ class TestFphoSetup(unittest.TestCase):
                                               f2greencol=None,
                                               write_xlsx=False)
         fpho_setup.plot_isosbestic_norm(fpho_dataframe=df_test,
-                                               output_filename='my_file_name')
+                                        output_filename='my_file_name')
         self.assertTrue(path.exists('my_file_name_f1GreenNormIso.png'))
         self.assertTrue(path.exists('my_file_name_f1RedNormIso.png'))
 
@@ -111,7 +111,7 @@ class TestFphoSetup(unittest.TestCase):
                                               f2greencol=None,
                                               write_xlsx=False)
         fpho_setup.plot_fitted_exp(fpho_dataframe=df_test,
-                                         output_filename='my_file_name')
+                                   output_filename='my_file_name')
         self.assertTrue(path.exists('my_file_name_f1GreenNormExp.png'))
         self.assertTrue(path.exists('my_file_name_f1RedNormExp.png'))
 
