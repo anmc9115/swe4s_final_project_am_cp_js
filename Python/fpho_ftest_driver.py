@@ -3,7 +3,6 @@
 import argparse
 import sys
 import fpho_setup
-import yaml
 
 
 def main():
