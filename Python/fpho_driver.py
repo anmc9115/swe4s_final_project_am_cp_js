@@ -1,8 +1,9 @@
-"""ADD DOCUMENTATION"""
+"""This file runs the functions in the fpho_setup library """
 
 import argparse
 import sys
 import fpho_setup
+import yaml
 
 
 def main():
@@ -42,6 +43,9 @@ def main():
     Pandas dataframe of parsed fiber photometry data
     Writes an output CSV to specified file name
     """
+    # use with config.txt
+    # run bash command: python fpho_driver.py @config.txt
+    parser = argparse.ArgumentParser(fromfile_prefix_chars='@')
 
     parser = argparse.ArgumentParser(description=('Parse fiber photometry data'
                                                   + 'to prepare for analyses'))
@@ -78,19 +82,16 @@ def main():
 
     parser.add_argument('--plot_raw_signal',
                         dest='plot_raw_signal',
-                        # type=bool,
                         action='store_true',
                         help='Type 1 to plot raw signal trace')
 
     parser.add_argument('--plot_iso_fit',
                         dest='plot_iso_fit',
-                        # type=bool,
                         action='store_true',
                         help='Type 1 to plot iso fitted trace')
 
     parser.add_argument('--plot_fit_exp',
                         dest='plot_fit_exp',
-                        # type=bool,
                         action='store_true',
                         help='Type 1 to plot fitted exponent')
 

@@ -14,8 +14,10 @@ from scipy.optimize import curve_fit
 #                                           input_filename='TestData/1FiberTesting.csv',
 #                                           output_filename='test.csv')
 
-#TestData/1FiberTesting.csv
-# metadata_file = fpho_setup.make_summary_file(animal_num='1', exp_desc = 'Prairie dogs hanging out',exp_yyyy_mm_dd = "2000-12-01", summarycsv_name="summary.csv")
+
+
+# metadata_file = fpho_setup.make_summary_file(animal_num='1', exp_desc = 'Prairie voles hanging out',exp_yyyy_mm_dd = "2000-12-01", summarycsv_name="summary.csv")
+
 # print(metadata_file)
 
 # print(pd.DataFrame.head(pho_setup_DF))

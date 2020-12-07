@@ -1,12 +1,8 @@
 """Library of functions for fpho_driver
-
     * import_fpho_data - saves data from csv in lists
     * make_summary_file - outputs txt file of summary info
-    * plot_1fiber_norm_fitted - Plots 1 fiber normalized fitted exponenent
-    * plot_2fiber_norm_fitted - Plots 2 fiber normalized fitted exponenent
-    * plot_1fiber_norm_iso - Plots 1 fiber normalized isosbestic fit
-    * plot_2fiber_norm_iso - PLots 2 fiber normalized isosbestic fit
-
+    * plot_fitted_exp - Plots 1 fiber normalized fitted exponenent
+    * plot_isosbestic_norm - Plots 1 fiber normalized isosbestic fit
 """
 
 # Claire to-do: Add warning message when columns are different lengths
@@ -18,12 +14,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 from scipy.optimize import curve_fit
+import csv
 
 driver_version = 'v2.0'
 
 
-def import_fpho_data(animal_ID, exp_date, exp_desc,
-                     input_filename, output_filename):
+def import_fpho_data(input_filename, output_filename,
+                     n_fibers, f1greencol,
+                     animal_ID, exp_date, exp_desc,
+                     f2greencol=None,
+                     write_xlsx=False):
     """Takes a file name, returns a dataframe of parsed data
 
         Parameters
@@ -34,6 +34,26 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         output_filename: string
                          file path and name for output csv
 
+        n_fibers: integer
+                  Integer indicating 1 or 2 fiber input data
+
+        f1greencol: integer
+                    Integer of f1green column index
+
+        f2greencol: integer
+                    Integer of f2green column index
+                    Default = None
+
+        animal_ID: integer?
+                   Unique animal ID #
+
+        exp_date: YYYY_MM_DD
+                  Date data was gathered
+
+        exp_desc: string
+                  Brief description of data
+
+
         Returns:
         --------
         twofiber_fdata: list
@@ -41,116 +61,17 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                            f2GreenIso, f2GreenRed, f2GreenGreen,
                            f1RedIso, f1RedRed, f1RedGreen,
                            f2RedIso, f2RedRed, f2RedGreen,
-                           fTimeIso, fTimeRed, fTimeGreen
-                name depcits fiber number, channel, color
+                           fTimeIso, fTimeRed, fTimeGreen,
+                           animal_ID, exp_date, exp_desc
+                           ** name depcits fiber number, channel, color
+
         onefiber_fdata: list
                 containing f1GreenIso, f1GreenRed, f1GreenGreen,
                            f1RedIso, f1RedRed, f1RedGreen,
-                           fTimeIso, fTimeRed, fTimeGreen
+                           fTimeIso, fTimeRed, fTimeGreen,
+                           animal_ID, exp_date, exp_desc
                 name depcits fiber number, channel, color
         """
-
-    # User input to indicate one fiber or two fiber data
-    fiber_val = input("\nOne fiber or two fiber input data?\n"
-                      + "Please enter <1> if one fiber data "
-                      + "or <2> if two fiber data: ")
-
-    try:
-        fiber_val = int(fiber_val)
-    except ValueError:
-        print("Error: Invalid input."
-              + "Please restart and use integer input to indicate "
-              + "number of fibers represented in input data.\n")
-        sys.exit(1)
-
-    while fiber_val not in [1, 2]:
-        print("Error: Integer entered for number of "
-              + "fibers represented in dataset <"
-              + str(fiber_val) + "> was invalid."
-              + " Please enter <1> or <2> or press any letter to exit.")
-        fiber_val = input()
-        if type(fiber_val) != int:
-            sys.exit()
-
-    # User input to find out which column contains info for the f1Red channel
-    f1Red_col = input("\nWhich column contains f1Red information? "
-                      + "Please enter <3> or <4> indicating column index: ")
-    try:
-        f1Red_col = int(f1Red_col)
-    except ValueError:
-        print("Error: Column index not entered as integer. Restarting")
-
-    while f1Red_col not in [3, 4]:
-        print("\nError: Your input <" + str(f1Red_col) + "> was invalid. "
-              + "Enter either <3> or <4> or press any letter to exit.\n")
-        f1Red_col = input("Which column contains f1Red information?\n"
-                          + "Enter <3> or <4>, or press any letter to exit: ")
-        if type(f1Red_col) != int:
-            sys.exit()
-
-    if f1Red_col == 3:
-        f1Green_col = 4
-        while True:
-            answer = input("\nYou indicated that column 3 contains f1Red"
-                           + " and column 4 contains f1Green. "
-                           + "Is that correct (yes or no)? ")
-            if answer.lower().startswith("y"):
-                break
-            elif answer.lower().startswith("n"):
-                print("You replied no. Restarting data information entry")
-                exit()
-    else:
-        f1Green_col = 3
-        while True:
-            answer = input("You indicated that column 3 contains f1Green"
-                           + " and column 4 contains f1Red. "
-                           + "Is this correct (yes or no)?\n")
-            if answer.lower().startswith("y"):
-                break
-            elif answer.lower().startswith("n"):
-                print("You replied no. Please restart")
-                sys.exit()
-
-    # Begin 2 fiber if statement to get 2 fiber column info
-    if fiber_val == 2:
-        f2Red_col = int(input("Which column contains f2Red information?\n"
-                              + "Please enter <5> or <6>:\n"))
-        while f2Red_col not in [4, 5]:
-            print("Your input", f2Red_col,
-                  "is invalid.\nEnter either <5> or <6>, or 'x' to exit.\n")
-            f2Red_col = input("Which column contains f2Red information?\n"
-                              + "Please enter <5> or <6>:\n")
-            if f2Red_col == 'x':
-                exit()
-
-        if f2Red_col == 5:
-            f2Green_col = 6
-            while True:
-                answer = input("You indicated that column 5 contains f1Red "
-                               + "and column 6 contains f1Green. "
-                               + "Is this correct (yes or no)?\n")
-                if answer.lower().startswith("y"):
-                    break
-                elif answer.lower().startswith("n"):
-                    print("You replied no. Please restart")
-                    exit()
-        else:
-            f2Green_col = 5
-            while True:
-                answer = input("You indicated that column 5 contains f1Green "
-                               + "and column 6 contains f2Red. "
-                               + "Is this correct (yes or no)?\n")
-                if answer.lower().startswith("y"):
-                    break
-                elif answer.lower().startswith("n"):
-                    print("You replied no. Please restart")
-                    exit()
-
-    fTime = []
-    f1Red = []
-    f1Green = []
-    f2Red = []
-    f2Green = []
 
     # Open file, catch errors
     try:
@@ -163,17 +84,103 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         print("Could not access file: " + input_filename)
         sys.exit(2)
 
+    # Change None string to None keyword
+    if f2greencol == "None":
+        f2greencol = None
+    else:
+        f2greencol = f2greencol
+
+    # Catch error: number of fibers no integer
+    try:
+        n_fibers = int(n_fibers)
+    except ValueError:
+        print("Error: Invalid input for number of fibers."
+              + "Please use integer input to indicate "
+              + "number of fibers represented in input data.\n")
+        sys.exit(1)
+
+    # Catch error: number of fibers not integer 1 or 2
+    if n_fibers not in [1, 2]:
+        print("Error: Integer entered for number of "
+              + "fibers represented in dataset <"
+              + str(n_fibers) + "> was invalid."
+              + " Please enter 1 or 2 in integer format")
+        sys.exit(1)
+
+    # Catch error: f1green col entry not integer
+    try:
+        f1greencol = int(f1greencol)
+    except ValueError:
+        print("\nError: f1green column index not entered as integer")
+        sys.exit(1)
+
+    # Catch error: f1green col entry 3 or 4
+    if f1greencol not in [3, 4]:
+        print("\nError: Integer entered for f1Green column index <"
+              + str(f1greencol) + "> was invalid."
+              + " Please enter 3 or 4 in integer format")
+        sys.exit(1)
+
+    # Catch error: Mismatched entries - 2 fibers but info for one
+    if(n_fibers == 2 and f2greencol is None):
+        print("\nError: Indicated 2 fibers in input data "
+              + "but did not provide column index for f2Green data. "
+              + "Check the config.yml file for mistmatched inputs.\n")
+        sys.exit(1)
+
+    # Catch error: Mismatched entries - 1 fiber but info for 2
+    if(n_fibers == 1 and f2greencol is not None):
+        print(n_fibers)
+        print(f2greencol)
+        print("\nError: Indicated 1 fiber in input data "
+              + "but provided column index for f2Green data. "
+              + "Check config.yml file for mismatched inputs.\n")
+        sys.exit(1)
+
+    if f1greencol == 3:
+        f1redcol = 4
+    else:
+        f1redcol = 3
+
+    if f2greencol is not None:
+
+        # Catch error: f2green col entry not integer
+        try:
+            f2greencol = int(f2greencol)
+        except ValueError:
+            print("\nError: f2green column index not entered as integer")
+            sys.exit(1)
+
+        # Catch error: f1green col entry 5 or 6
+        if f1greencol not in [5, 5]:
+            print("\nError: Integer entered for f2Green column index <"
+                  + str(f2greencol) + "> was invalid."
+                  + " Please enter 5 or 6 in integer format")
+            sys.exit(1)
+
+        # Assign f2red column index based on f2green
+        if f2greencol == 5:
+            f2redcol = 6
+        else:
+            f2redcol = 5
+
+    fTime = []
+    f1Red = []
+    f1Green = []
+    f2Red = []
+    f2Green = []
+
     for line in file:
         if header is None:
             header = line
             continue
         columns = line.rstrip().split(' ')
         fTime.append(float(columns[0]))
-        f1Red.append(float(columns[f1Red_col-1]))
-        f1Green.append(float(columns[f1Green_col-1]))
-        if fiber_val == 2:
-            f2Red.append(float(columns[f2Red_col-1]))
-            f2Green.append(float(columns[f2Green_col-1]))
+        f1Red.append(float(columns[f1redcol-1]))
+        f1Green.append(float(columns[f1greencol-1]))
+        if n_fibers == 2:
+            f2Red.append(float(columns[f2redcol-1]))
+            f2Green.append(float(columns[f2greencol-1]))
 
     file.close()
 
@@ -212,12 +219,7 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
     fTimeRed = fTime[redIdX::3]
     fTimeGreen = fTime[isoIdX::3]
 
-    # Create metadata file to put into last column of output dataframe
-    metadata = make_summary_file(animal_ID=animal_ID,
-                                 exp_date=exp_date,
-                                 exp_desc=exp_desc)
-
-    if fiber_val == 2:
+    if n_fibers == 2:
         # Second fiber, green
         f2GreenIso = f2Green[greenIdX::3]
         f2GreenRed = f2Green[redIdX::3]
@@ -227,6 +229,23 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
         f2RedIso = f2Red[greenIdX::3]
         f2RedRed = f2Red[redIdX::3]
         f2RedGreen = f2Red[isoIdX::3]
+
+        # Create list of all column names
+        colnames = ['f1GreenIso', 'f1GreenRed', 'f1GreenGreen',
+                    'f1RedIso', 'f1RedGreen', 'f1RedRed',
+                    'f2GreenIso', 'f2GreenRed', 'f2GreenGreen',
+                    'f2RedIso', 'f2RedGreen', 'f2RedRed',
+                    'fTimeIso', 'fTimeRed', 'fTimeGreen']
+
+        # Set arbitrarily large column length
+        collength = 100**10
+
+        # Find minimum column length by comparing
+        # last value to length of current column.
+        # Use to crop lists in output dataframe
+
+        for name in colnames:
+            collength = min(collength, len(eval(name)))
 
         # Everything into a dictionary
         twofiber_dict = {'f1GreenIso': [f1GreenIso],
@@ -244,86 +263,68 @@ def import_fpho_data(animal_ID, exp_date, exp_desc,
                          'fTimeIso': [fTimeIso],
                          'fTimeRed': [fTimeRed],
                          'fTimeGreen': [fTimeGreen],
-                         'metadata': [metadata]}
+                         'animalID': [animal_ID],
+                         'date': [exp_date],
+                         'description': [exp_desc]}
 
         # Dictionary to dataframe
         twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
 
-        # If writing to txt is better for some reason, we can use this code
-        # f = open("dict.txt","w")
-        # f.write( str(twofiber_dict) )
-        # f.close()
-
         # Dataframe to output csv
-        twofiber_fdata.to_csv(output_filename, index=None, na_rep='')
-        print('Output CSV written to ' + output_filename)
+        output_csv = output_filename + '_Summary.csv'
+        twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
+        print('Output CSV written to ' + output_csv + '_Summary.csv')
+
+        if write_xlsx is True:
+            output_xlsx = output_filename + '_Summary.xlsx'
+            twofiber_fdata.to_excel(output_xlsx, index=False)
+            print('Output excel file written to ' + "output_xlsx")
+
         return twofiber_fdata
 
     else:
+
+        # Create list of all column names
+        colnames = ['f1GreenIso', 'f1GreenRed', 'f1GreenGreen',
+                    'f1RedIso', 'f1RedGreen', 'f1RedRed',
+                    'fTimeIso', 'fTimeRed', 'fTimeGreen']
+
+        # Set arbitrarily large column length
+        collength = 100**10
+
+        # Find minimum column length. Use to crop lists in output dataframe
+        for name in colnames:
+            collength = min(collength, len(eval(name)))
+
         # Everything into a dictionary
-        onefiber_dict = {'f1GreenIso': [f1GreenIso],
-                         'f1GreenGreen': [f1GreenGreen],
-                         'f1RedIso': [f1RedIso],
-                         'f1RedRed': [f1RedRed],
-                         'f1RedGreen': [f1RedGreen],
-                         'fTimeIso': [fTimeIso],
-                         'fTimeRed': [fTimeRed],
-                         'fTimeGreen': [fTimeGreen],
-                         'metadata': [metadata]}
+        onefiber_dict = {'f1GreenIso': [f1GreenIso[0:collength]],
+                         'f1GreenRed': [f1GreenRed[0:collength]],
+                         'f1GreenGreen': [f1GreenGreen[0:collength]],
+                         'f1RedIso': [f1RedIso[0:collength]],
+                         'f1RedRed': [f1RedRed[0:collength]],
+                         'f1RedGreen': [f1RedGreen[0:collength]],
+                         'fTimeIso': [fTimeIso[0:collength]],
+                         'fTimeRed': [fTimeRed[0:collength]],
+                         'fTimeGreen': [fTimeGreen[0:collength]],
+                         'animalID': [animal_ID],
+                         'date': [exp_date],
+                         'description': [exp_desc]}
 
         # Dictionary to dataframe
-        onefiber_fdata = pd.DataFrame(onefiber_dict)
+        onefiber_fdata = pd.DataFrame.from_dict(onefiber_dict)
+        print(onefiber_fdata)
 
         # Dataframe to output csv
-        onefiber_fdata.to_csv(output_filename, index=False, na_rep='')
-        print('Output CSV written to ' + output_filename)
+        output_csv = output_filename + '_Summary.csv'
+        onefiber_fdata.to_csv(output_csv, index=False)
+        print('Output CSV written to ' + output_csv)
+
+        if write_xlsx is True:
+            output_xlsx = output_filename + 'Summary.xlsx'
+            onefiber_fdata.to_excel(output_xlsx, index=False)
+            print('Output excel file written to ' + output_xlsx)
+
         return onefiber_fdata
-
-
-def make_summary_file(animal_ID, exp_date, exp_desc, summarycsv_name=None):
-
-    """Creates a file that holds metadata about the primary input file
-
-        Parameters
-        ----------
-        animal_ID: integer
-                   Number ID for the animal
-        exp_date: string
-                  Date of the experiment
-        exp_desc: string
-                  Brief description of experiment
-        summarycsv_name: optional string
-                         file path for output txt
-
-        Returns:
-        --------
-        summary_info: text file
-            file containing: version, animal_num, date, exp,
-
-    """
-
-    # Check data format
-    try:
-        datetime.datetime.strptime(exp_date, '%Y-%m-%d')
-    except ValueError:
-        print('Date {'+exp_date+'} not entered in correct format.'
-              + ' Please re-enter in YYYY-MM-DD format.')
-        # raise ValueError
-        sys.exit(1)  # Change this to raise value error when using driver file?
-
-    # Create metadata dictionary
-    info = {'Animal ID number': [animal_ID],
-            'Date': [exp_date],
-            'Brief description': [exp_desc]}
-
-    # Dictionary to DF
-    metadata_df = pd.DataFrame.from_dict(info)
-
-    # If user wants, write to csv
-    if summarycsv_name is not None:
-        metadata_df.to_csv(summarycsv_name, index=False)
-
-    return metadata_df
 
 
 def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
@@ -375,45 +376,55 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
     for channel in channel_list:
 
         if 'f1Red' in str(channel):
-            channel = "f1RedRed"
+            channels = ["f1RedRed"]
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f2Red' in str(channel):
-            channel = "f2RedRed"
+            channels = ["f2RedRed"]
             time_col = 'fTimeRed'
             l_color = "r"
         if 'f1Green' in str(channel):
-            channel = "f1GreenGreen"
+            channels = ["f1GreenGreen", "f1GreenIso"]
             time_col = 'fTimeGreen'
             l_color = "g"
         if 'f2Green' in str(channel):
-            channel = "f2GreenGreen"
+            channels = ["f2GreenGreen", "f2GreenIso"]
             time_col = 'fTimeGreen'
             l_color = "g"
 
-        channel_data = df[channel].values[data_row_index]
-        time_data = df[time_col].values[data_row_index]
+        fig = plt.figure(figsize=(7*len(channels), 6),
+                         facecolor='w',
+                         edgecolor='k',
+                         dpi=300)
 
-        # Initialize plot, add data and title
-        plt.figure()
-        plt.plot(time_data, channel_data, color=l_color)
-        plt.title(str(channel))
+        for i in range(0, len(channels)):
 
-        # Remove top and right borders
-        plt.gca().spines['right'].set_color('none')
-        plt.gca().spines['top'].set_color('none')
+            channel_data = df[channels[i]].values[data_row_index]
+            time_data = df[time_col].values[data_row_index]
+
+            # Initialize plot, add data and title
+            ax = fig.add_subplot(1, len(channels), 1+i)
+            ax.plot(time_data, channel_data, color=l_color)
+            ax.set_title(str(channels[i]))
+
+            # Remove top and right borders
+            plt.gca().spines['right'].set_color('none')
+            plt.gca().spines['top'].set_color('none')
 
         # outputs raw sig plot as png file
-        rawsig_file_name = output_filename[:-4] + '_' + channel + '_rawsig.png'
+        rawsig_file_name = output_filename + '_RawSignal_' + channel + '.png'
         plt.savefig(rawsig_file_name, bbox_inches='tight')
+        plt.close()
 
 
-def plot_1fiber_norm_iso(fpho_dataframe):
+def plot_isosbestic_norm(fpho_dataframe, output_filename):
     """Creates a plot normalizing 1 fiber data to the isosbestic
         Parameters
         ----------
         fpho_dataframe: string
                 Pandas dataframe
+        output_filename: string
+                         file path and name for output csv
         Returns:
         --------
         f1GreenNorm.png and f1RedNorm.png: png file
@@ -525,7 +536,8 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     plt.title('Green Normalized to Isosbestic')
 
     # Save the plot in a png file
-    figGreen = plt.savefig('f1GreenNormIso.png')
+    green_iso_plot_name = output_filename + '_f1GreenNormIso.png'
+    figGreen = plt.savefig(green_iso_plot_name)
     plt.close(figGreen)
 
     # Plot the data for red
@@ -533,7 +545,8 @@ def plot_1fiber_norm_iso(fpho_dataframe):
     plt.title('Red Normalized to Isosbestic')
 
     # Save the plot in a png file
-    figRed = plt.savefig('f1RedNormIso.png')
+    red_iso_plot_name = output_filename + '_f1RedNormIso.png'
+    figRed = plt.savefig(red_iso_plot_name)
     plt.close(figRed)
 
 
@@ -555,7 +568,7 @@ def fit_exp(values, a, b, c, d):
     return a * np.exp(b * values) + c * np.exp(d * values)
 
 
-def plot_1fiber_norm_fitted(fpho_dataframe):
+def plot_fitted_exp(fpho_dataframe, output_filename):
     """Creates a plot normalizing 1 fiber data to an
     exponential of the form y=A*exp(-B*X)+C*exp(-D*x).
 
@@ -563,6 +576,8 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
         ----------
         fpho_dataframe: string
                 Pandas dataframe
+        output_filename: string
+                         file path and name for output csv
         Returns:
         --------
         f1GreenNormExp.png and f1RedNormExp.png: png file
@@ -623,7 +638,7 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
     timeG = []
     for i in range(len(f1GreenTime)):
         timeG.append(f1GreenTime[i] - f1GreenTime[0])
-    
+
     timeR = []
     for i in range(len(f1RedTime)):
         timeR.append(f1RedTime[i] - f1RedTime[0])
@@ -633,20 +648,20 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
     # inputs for p0) must be negative, while A and C (the
     # first and third inputs for p0) must be positive
     popt, pcov = curve_fit(fit_exp, timeG, f1GreenGreen,
-                            p0=(1.0,-0.001,1.0,-0.001), maxfev=500000)
+                           p0=(1.0, -0.001, 1.0, -0.001), maxfev=500000)
 
-    AG = popt[0] # A value
-    BG = popt[1] # B value
-    CG = popt[2] # C value
-    DG = popt[3] # D value
+    AG = popt[0]  # A value
+    BG = popt[1]  # B value
+    CG = popt[2]  # C value
+    DG = popt[3]  # D value
 
     popt, pcov = curve_fit(fit_exp, timeR, f1RedRed,
-                            p0=(1.0,-0.001,1.0,-0.001), maxfev=500000)
+                           p0=(1.0, -0.001, 1.0, -0.001), maxfev=500000)
 
-    AR = popt[0] # A value
-    BR = popt[1] # B value
-    CR = popt[2] # C value
-    DR = popt[3] # D value
+    AR = popt[0]  # A value
+    BR = popt[1]  # B value
+    CR = popt[2]  # C value
+    DR = popt[3]  # D value
 
     # Generate fit line using calculated coefficients
     fitGreen = fit_exp(timeG, AG, BG, CG, DG)
@@ -660,7 +675,8 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
     plt.title('Green Normalized to Exponential')
 
     # Save the plot in a png file
-    figGreen = plt.savefig('f1GreenNormExp.png')
+    green_exp_plot_name = output_filename + '_f1GreenNormExp.png'
+    figGreen = plt.savefig(green_exp_plot_name)
     plt.close(figGreen)
 
     # Plot the data for red
@@ -671,6 +687,6 @@ def plot_1fiber_norm_fitted(fpho_dataframe):
     plt.title('Red Normalized to Exponential')
 
     # Save the plot in a png file
-    figRed = plt.savefig('f1RedNormExp.png')
+    red_exp_plot_name = output_filename + '_f1RedNormExp.png'
+    figRed = plt.savefig(red_exp_plot_name)
     plt.close(figRed)
-
