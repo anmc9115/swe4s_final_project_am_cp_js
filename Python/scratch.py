@@ -8,11 +8,15 @@ import matplotlib.pyplot as plt
 import datetime
 from scipy.optimize import curve_fit
 
-#pho_setup_DF = fpho_setup.import_fpho_data(animal_ID='vole1',
-#                                           exp_date='2020-09-01',
-#                                           exp_desc="testing",
-#                                           input_filename='TestData/1FiberTesting.csv',
-#                                           output_filename='test.csv')
+
+df = fpho_setup.import_fpho_data(input_filename='TestData/1FiberTesting.csv',
+                                         output_filename='my_file_name',
+                                         n_fibers=1, f1greencol=4,
+                                         animal_ID='vole1',
+                                         exp_date='2020-09-01',
+                                         exp_desc="testing",
+                                         f2greencol=None,
+                                         write_xlsx=False)
 
 
 
@@ -24,4 +28,4 @@ from scipy.optimize import curve_fit
 
 #fpho_setup.raw_signal_trace('bad_df.csv',output_filename='test3.png',data_row_index=0)
 
-Norm = fpho_setup.plot_1fiber_norm_iso(fpho_dataframe=pho_setup_D)
+Norm = fpho_setup.plot_isosbestic_norm(fpho_dataframe=df,output_filename='my_file_name')
