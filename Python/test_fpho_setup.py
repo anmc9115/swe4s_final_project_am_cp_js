@@ -12,7 +12,7 @@ from os import path
 class TestFphoSetup(unittest.TestCase):
 
     def test_import_fpho_data(self):
-        df = fpho_setup.import_fpho_data(input_filename='TestData'
+        df = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                          '/1FiberTesting.csv',
                                          output_filename='my_file_name',
                                          n_fibers=1, f1greencol=4,
@@ -33,7 +33,7 @@ class TestFphoSetup(unittest.TestCase):
 
     def test_import_fpho_data_errors(self):
         with self.assertRaises(SystemExit) as cm:
-            fpho_setup.import_fpho_data(input_filename='TestData/1Fdlkjf',
+            fpho_setup.import_fpho_data(input_filename='Python/TestData/1Fdlkjf',
                                         output_filename='my_file_name',
                                         n_fibers=1, f1greencol=3,
                                         animal_ID='vole1',
@@ -53,7 +53,7 @@ class TestFphoSetup(unittest.TestCase):
         self.assertEqual(9.079985952496971e-05, fit[3])
 
     def test_raw_signal_trace(self):
-        df_test = fpho_setup.import_fpho_data(input_filename='TestData'
+        df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                               '/1FiberTesting.csv',
                                               output_filename='my_file_name',
                                               n_fibers=1, f1greencol=3,
@@ -69,7 +69,7 @@ class TestFphoSetup(unittest.TestCase):
         self.assertTrue(path.exists('testing_unit_f1RedRed_rawsig.png'))
 
     def test_raw_signal_trace_errors(self):
-        df_test = fpho_setup.import_fpho_data(input_filename='TestData'
+        df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                               '/1FiberTesting.csv',
                                               output_filename='my_file_name',
                                               n_fibers=1, f1greencol=3,
@@ -86,7 +86,7 @@ class TestFphoSetup(unittest.TestCase):
         self.assertEqual(cm.exception.code, 1)
 
     def test_plot_isosbestic_norm(self):
-        df_test = fpho_setup.import_fpho_data(input_filename='TestData'
+        df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                               '/1FiberTesting.csv',
                                               output_filename='my_file_name',
                                               n_fibers=1, f1greencol=3,
@@ -101,7 +101,7 @@ class TestFphoSetup(unittest.TestCase):
         self.assertTrue(path.exists('my_file_name_f1RedNormIso.png'))
 
     def test_plot_fitted_exp(self):
-        df_test = fpho_setup.import_fpho_data(input_filename='SampleData'
+        df_test = fpho_setup.import_fpho_data(input_filename='Python/SampleData'
                                               '/1fiberSignal.csv',
                                               output_filename='my_file_name',
                                               n_fibers=1, f1greencol=3,
@@ -111,7 +111,7 @@ class TestFphoSetup(unittest.TestCase):
                                               f2greencol=None,
                                               write_xlsx=False)
         fpho_setup.plot_fitted_exp(fpho_dataframe=df_test,
-                                   output_filename='my_file_name')
+                                  output_filename='my_file_name')
         self.assertTrue(path.exists('my_file_name_f1GreenNormExp.png'))
         self.assertTrue(path.exists('my_file_name_f1RedNormExp.png'))
 
