@@ -14,6 +14,7 @@ before_install:
     - conda install --yes matplotlib
     - conda install --yes pandas
     - conda install --yes scipy
+    - conda install --yes openpyxl
 
 script:
     - pycodestyle Python/fpho_setup.py
