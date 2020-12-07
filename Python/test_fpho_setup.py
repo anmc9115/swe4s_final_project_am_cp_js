@@ -1,4 +1,7 @@
 """Unit testing for functions in fpho_setup
+
+TO DO: Needs documentation and comments
+
 """
 import fpho_setup
 import unittest
@@ -64,9 +67,9 @@ class TestFphoSetup(unittest.TestCase):
                                               write_xlsx=False)
         # Must use the user input: f1Red
         fpho_setup.raw_signal_trace(fpho_dataframe=df_test,
-                                    output_filename='testing_unit.png',
+                                    output_filename='testing_unit',
                                     data_row_index=0)
-        self.assertTrue(path.exists('testing_unit_f1RedRed_rawsig.png'))
+        self.assertTrue(path.exists('testing_unit_RawSignal_f1Red.png'))
 
     def test_raw_signal_trace_errors(self):
         df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
@@ -95,7 +98,7 @@ class TestFphoSetup(unittest.TestCase):
                                               exp_desc="testing",
                                               f2greencol=None,
                                               write_xlsx=False)
-        fpho_setup.plot_isosbestic_norm(fpho_dataframe=df_test,
+        norm = fpho_setup.plot_isosbestic_norm(fpho_dataframe=df_test,
                                         output_filename='my_file_name')
         self.assertTrue(path.exists('my_file_name_f1GreenNormIso.png'))
         self.assertTrue(path.exists('my_file_name_f1RedNormIso.png'))
@@ -110,7 +113,7 @@ class TestFphoSetup(unittest.TestCase):
                                               exp_desc="testing",
                                               f2greencol=None,
                                               write_xlsx=False)
-        fpho_setup.plot_fitted_exp(fpho_dataframe=df_test,
+        fit = fpho_setup.plot_fitted_exp(fpho_dataframe=df_test,
                                    output_filename='my_file_name')
         self.assertTrue(path.exists('my_file_name_f1GreenNormExp.png'))
         self.assertTrue(path.exists('my_file_name_f1RedNormExp.png'))
