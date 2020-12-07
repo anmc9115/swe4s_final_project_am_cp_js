@@ -15,7 +15,7 @@ before_install:
     - conda install --yes pandas
 #   - conda install --yes statistics
 #    - conda install --yes datetime
-    - conda install --yes scipy.optimize
+    - conda install --yes scipy
 
 script:
     - python test_fpho_setup.py
