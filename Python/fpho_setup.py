@@ -320,7 +320,7 @@ def import_fpho_data(input_filename, output_filename,
         print('Output CSV written to ' + output_csv)
 
         if write_xlsx is True:
-            output_xlsx = output_filename + 'Summary.xlsx'
+            output_xlsx = output_filename + '_Summary.xlsx'
             onefiber_fdata.to_excel(output_xlsx, index=False)
             print('Output excel file written to ' + output_xlsx)
 
