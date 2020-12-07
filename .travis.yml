@@ -18,7 +18,7 @@ before_install:
     - conda install --yes scipy
 
 script:
-#    - python Python/test_fpho_setup.py
+    - python Python/test_fpho_setup.py
 #    - bash Python/test_fpho_driver.sh
     - pycodestyle Python/fpho_setup.py
     - pycodestyle Python/behavior_setup.py
