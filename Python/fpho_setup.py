@@ -77,7 +77,6 @@ def import_fpho_data(input_filename, output_filename,
     try:
         file = open(input_filename, 'r')
         header = None
-        columns = line.rstrip().split(' ')
     except FileNotFoundError:
         print("Could not find file: " + input_filename)
         sys.exit(1)
