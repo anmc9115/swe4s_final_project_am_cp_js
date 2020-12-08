@@ -84,6 +84,15 @@ def import_fpho_data(input_filename, output_filename,
         print("Could not access file: " + input_filename)
         sys.exit(2)
 
+    # Get number of columns in input data
+    for line in file:
+        if header is None:
+            header = line
+            continue
+        columns = line.rstrip().replace(',', ' ').split(' ')
+        break
+    n_columns = len(columns)
+
     # Change None string to None keyword
     if f2greencol == "None":
         f2greencol = None
@@ -118,8 +127,13 @@ def import_fpho_data(input_filename, output_filename,
     if f1greencol not in [3, 4]:
         print("\nError: Integer entered for f1Green column index <"
               + str(f1greencol) + "> was invalid."
-              + " Please enter 3 or 4 in integer format")
+              + " Please enter 3 or 4 in integer format\n")
         sys.exit(1)
+
+    if f1greencol > n_columns:
+        print("\nColumn index for f1green is not a valid column index. "
+              + "Input data contains ", n_columns, " columns.\n")
+        sys.exit
 
     # Catch error: Mismatched entries - 2 fibers but info for one
     if(n_fibers == 2 and f2greencol is None):
@@ -130,8 +144,6 @@ def import_fpho_data(input_filename, output_filename,
 
     # Catch error: Mismatched entries - 1 fiber but info for 2
     if(n_fibers == 1 and f2greencol is not None):
-        print(n_fibers)
-        print(f2greencol)
         print("\nError: Indicated 1 fiber in input data "
               + "but provided column index for f2Green data. "
               + "Check config.yml file for mismatched inputs.\n")
@@ -149,6 +161,11 @@ def import_fpho_data(input_filename, output_filename,
             f2greencol = int(f2greencol)
         except ValueError:
             print("\nError: f2green column index not entered as integer")
+            sys.exit(1)
+
+        if f2greencol > n_columns:
+            print("\nColumn index for f2green is not a valid column index. "
+                  + "Input data contains", n_columns, "columns.\n")
             sys.exit(1)
 
         # Catch error: f1green col entry 5 or 6
@@ -174,7 +191,9 @@ def import_fpho_data(input_filename, output_filename,
         if header is None:
             header = line
             continue
-        columns = line.rstrip().split(' ')
+        # Read in each line.
+        # Must be separated by single space or commit
+        columns = line.rstrip().replace(",", " ").split(' ')
         fTime.append(float(columns[0]))
         f1Red.append(float(columns[f1redcol-1]))
         f1Green.append(float(columns[f1greencol-1]))
