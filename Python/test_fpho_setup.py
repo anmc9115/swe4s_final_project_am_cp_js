@@ -82,7 +82,7 @@ class TestFphoSetup(unittest.TestCase):
                                               f2greencol=None,
                                               write_xlsx=False)
         with self.assertRaises(SystemExit) as cm:
-            # Use the user input: g
+            # Use the user input: userinputfailure
             fpho_setup.raw_signal_trace(fpho_dataframe=df_test,
                                         output_filename='testing_unit.png',
                                         data_row_index=0)
