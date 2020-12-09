@@ -19,7 +19,7 @@ git clone https://github.com/anmc9115/swe4s_final_project_am_cp_js.git
 2. If analyzing behavior, score behavior using BORIS with the events recorded in `seconds`
 3. If analyzing behavior, download raw data from behavior scoring using BORIS by clicking: `observations -> export events -> tabular events -> select observations -> save as csv`
 4. Download all analysis software as described in the `Installation` section above
-5. Open and edit the `config.yml` file with the parameters specific to your experiment. You will need to edit this file eahc time you want to run the code.
+5. Open and edit the `config.yml` file with the parameters specific to your experiment. You will need to edit this file each time you want to run the code.
 6. In the command line, run the following command to execute the code:
       `python fpho_config.py --config config.yml`
 7. A summary excel file along with any plots from analysis will be output to the working directory.
@@ -35,8 +35,8 @@ git clone https://github.com/anmc9115/swe4s_final_project_am_cp_js.git
 ## Release History
 
 * v1.0
-      * ADD: `fpho_setup.py` library that parses fpho data, contains analysis
-      * ADD: functional and unit testing: `fpho_ftest_driver.py`, `fpho_driver.py`, `ftests_fpho_setup.txt`, `test_fpho_driver.sh`, `test_fpho_setup.py`, `unittest_fpho_setup.py`
-      * ADD: `behavior_setup.py` library that parses behavior data, contains analysis
-      * ADD: `config.yml` file manipulated by user to run the software
-      * ADD: Example plots, sample and test data
+    * ADD: `fpho_setup.py` library that parses fpho data, contains analysis
+    * ADD: functional and unit testing: `fpho_ftest_driver.py`, `fpho_driver.py`, `ftests_fpho_setup.txt`, `test_fpho_driver.sh`, `test_fpho_setup.py`, `unittest_fpho_setup.py`
+    * ADD: `behavior_setup.py` library that parses behavior data, contains analysis
+    * ADD: `config.yml` file manipulated by user to run the software
+    * ADD: Example plots, sample and test data
