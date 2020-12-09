@@ -27,8 +27,10 @@ git clone https://github.com/anmc9115/swe4s_final_project_am_cp_js.git
 ## Example Plots
 ### Raw Signal Trace
 <center><img src="Python/ExamplePlots/Ex_RawSig.png" width="300"/></center>
+
 ### Normalized Signal to Isosbestic
 <center><img src="Python/ExamplePlots/Ex_NormIso.png" width="300"/></center>
+
 ### Normalized Signal to Biexponential Fit
 <center><img src="Python/ExamplePlots/Ex_NormExp.png" width="300"/></center>
 
