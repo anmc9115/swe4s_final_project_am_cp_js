@@ -5,9 +5,6 @@
     * plot_fitted_exp - plots 1 fiber normalized fitted exponenent
     * plot_isosbestic_norm - plots 1 fiber normalized isosbestic fit
 """
-
-# Claire to-do: Add warning message when columns are different lengths
-
 import sys
 from statistics import mean
 import pandas as pd
@@ -324,7 +321,6 @@ def import_fpho_data(input_filename, output_filename,
 
         # Dictionary to dataframe
         onefiber_fdata = pd.DataFrame.from_dict(onefiber_dict)
-        print(onefiber_fdata)
 
         # Dataframe to output csv
         output_csv = output_filename + '_Summary.csv'
