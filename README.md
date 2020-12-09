@@ -15,7 +15,7 @@ git clone https://github.com/anmc9115/swe4s_final_project_am_cp_js.git
 ```
 
 ## To Use the Code
-1. Obtain fiberphotometry data (msec/day) 
+1. Obtain fiberphotometry data `msec/day`
 2. If analyzing behavior, score behavior using BORIS with the events recorded in `seconds`
 3. If analyzing behavior, download raw data from behavior scoring using BORIS by clicking: `observations -> export events -> tabular events -> select observations -> save as csv`
 4. Download all analysis software as described in the `Installation` section above
