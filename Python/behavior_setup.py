@@ -1,3 +1,7 @@
+"""Library of functions for behavior analysis
+    * import_behavior_data - inputs data from BORIS csv
+    * plot_zscore - plots z-score for each behavior occurance
+"""
 import sys
 from statistics import mean
 import pandas as pd
@@ -59,7 +63,9 @@ def import_behavior_data(BORIS_filename, timestamp_filename):
 
 
 def plot_zscore(behaviorData, zplot_filename):
-    """Takes a file name, returns a dataframe of parsed data
+    """Takes a dataframe and creates plot of z-scores for
+        each time a select behavior occurs with the avg
+        z-score and SEM
 
         Parameters
         ----------

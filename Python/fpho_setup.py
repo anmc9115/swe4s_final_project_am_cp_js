@@ -1,8 +1,9 @@
 """Library of functions for fpho_driver
     * import_fpho_data - saves data from csv in lists
-    * make_summary_file - outputs txt file of summary info
-    * plot_fitted_exp - Plots 1 fiber normalized fitted exponenent
-    * plot_isosbestic_norm - Plots 1 fiber normalized isosbestic fit
+    * raw_signal_trace - plots raw signal from fpho data
+    * fit_exp - finds fitted exponent
+    * plot_fitted_exp - plots 1 fiber normalized fitted exponenent
+    * plot_isosbestic_norm - plots 1 fiber normalized isosbestic fit
 """
 
 # Claire to-do: Add warning message when columns are different lengths
@@ -29,48 +30,40 @@ def import_fpho_data(input_filename, output_filename,
         Parameters
         ----------
         input_filename: string
-                        The path to the CSV file
-
+                The path to the CSV file
         output_filename: string
-                         file path and name for output csv
-
+                name for output file
         n_fibers: integer
-                  Integer indicating 1 or 2 fiber input data
-
+                indicating 1 or 2 fiber input data
         f1greencol: integer
-                    Integer of f1green column index
-
+                f1green column index
         f2greencol: integer
-                    Integer of f2green column index
-                    Default = None
-
-        animal_ID: integer?
-                   Unique animal ID #
-
+                f2green column index
+                default = None
+        animal_ID: integer
+                unique animal ID #
         exp_date: YYYY_MM_DD
-                  Date data was gathered
-
+                date data was gathered
         exp_desc: string
-                  Brief description of data
+                brief description of data
 
-
-        Returns:
+       Returns:
         --------
-        twofiber_fdata: list
+        twofiber_fdata: pandas dataframe
                 containing f1GreenIso, f1GreenRed, f1GreenGreen,
                            f2GreenIso, f2GreenRed, f2GreenGreen,
                            f1RedIso, f1RedRed, f1RedGreen,
                            f2RedIso, f2RedRed, f2RedGreen,
                            fTimeIso, fTimeRed, fTimeGreen,
                            animal_ID, exp_date, exp_desc
-                           ** name depcits fiber number, channel, color
 
-        onefiber_fdata: list
+        onefiber_fdata: pandas dataframe
                 containing f1GreenIso, f1GreenRed, f1GreenGreen,
                            f1RedIso, f1RedRed, f1RedGreen,
                            fTimeIso, fTimeRed, fTimeGreen,
                            animal_ID, exp_date, exp_desc
-                name depcits fiber number, channel, color
+        * Note: only one of these will be returned, depending
+                on if data is for one or two fiber
         """
 
     # Open file, catch errors
@@ -99,7 +92,7 @@ def import_fpho_data(input_filename, output_filename,
     else:
         f2greencol = f2greencol
 
-    # Catch error: number of fibers no integer
+    # Catch error: number of fibers not integer
     try:
         n_fibers = int(n_fibers)
     except ValueError:
@@ -191,8 +184,8 @@ def import_fpho_data(input_filename, output_filename,
         if header is None:
             header = line
             continue
-        # Read in each line.
-        # Must be separated by single space or commit
+        # Read in each line
+        # Must be separated by single space or comma
         columns = line.rstrip().replace(",", " ").split(' ')
         fTime.append(float(columns[0]))
         f1Red.append(float(columns[f1redcol-1]))
@@ -351,18 +344,18 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
     Parameters
     ----------
     fpho_dataframe: pandas dataframe
-                    Contains parsed fiberphotometry data
-
-    output_filename: String
-                     file path for output png
-
+                    contains parsed fiberphotometry data
+    output_filename: string
+                    output png name
     data_row_index: optional integer
                     row containing data to plot
+
     Returns:
     --------
     output_filename: PNG
                      Plot of data
     """
+    # renamed for simplicity
     df = fpho_dataframe
 
     # Get user input for what to plot
@@ -441,13 +434,14 @@ def plot_isosbestic_norm(fpho_dataframe, output_filename):
         Parameters
         ----------
         fpho_dataframe: string
-                Pandas dataframe
+                pandas dataframe
         output_filename: string
-                         file path and name for output csv
+                name for output file
         Returns:
         --------
-        f1GreenNorm.png and f1RedNorm.png: png file
-                File containing the normalized plot for each fluorophore
+        output_filename_f1GreenNorm.png
+        & output_filename_f1RedNorm.png: png files
+                containing the normalized plot for each fluorophore
     """
 
     # Open dataframe
@@ -571,7 +565,7 @@ def plot_isosbestic_norm(fpho_dataframe, output_filename):
 
 def fit_exp(values, a, b, c, d):
     """Transforms data into an exponential function
-    of the form y=A*exp(-B*X)+C*exp(-D*x).
+        of the form y=A*exp(-B*X)+C*exp(-D*x)
 
         Parameters
         ----------
@@ -589,18 +583,19 @@ def fit_exp(values, a, b, c, d):
 
 def plot_fitted_exp(fpho_dataframe, output_filename):
     """Creates a plot normalizing 1 fiber data to an
-    exponential of the form y=A*exp(-B*X)+C*exp(-D*x).
+        exponential of the form y=A*exp(-B*X)+C*exp(-D*x)
 
         Parameters
         ----------
         fpho_dataframe: string
-                Pandas dataframe
+                pandas dataframe
         output_filename: string
-                         file path and name for output csv
+                name for output csv
         Returns:
         --------
-        f1GreenNormExp.png and f1RedNormExp.png: png file
-                File containing the normalized plot for each fluorophore
+        output_filename_f1GreenNormExp.png
+        & output_filename_f1RedNormExp.png: png files
+                containing the normalized plot for each fluorophore
     """
 
     # Open dataframe

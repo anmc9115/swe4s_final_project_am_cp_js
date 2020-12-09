@@ -8,7 +8,7 @@ import pandas as pd
 
 
 def main():
-    """Runs functions in fpho_setup, asks for what analysis to perform
+    """Runs functions in fpho_setup, processes config.yml
 
     Parameters
     ----------
@@ -19,16 +19,16 @@ def main():
 
     Returns
     -------
-    Pandas dataframe of parsed fiber photometry data
-    Writes an output CSV to specified file name
-    Outputs specified plots and analysis
+        Pandas dataframe of parsed fiber photometry data
+        Writes an output CSV/XLXS to specified file name
+        Outputs specified plots and analysis
     """
-    # use with config.yml
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--config', type=str, required=True)
     args = parser.parse_args()
 
+    # Opens and reads config file to process
     f = open(args.config, 'r')
     config = yaml.load(f, Loader=yaml.FullLoader)
     f.close()
@@ -53,7 +53,7 @@ def main():
                                           write_xlsx=(
                                                config['write_xlsx']))
 
-    # Plot raw signal if specified in commandline
+    # Plot raw signal if specified
     if config['plot_raw_signal'] is True:
         fpho_setup.raw_signal_trace(fpho_df, config['output_filename'])
 
