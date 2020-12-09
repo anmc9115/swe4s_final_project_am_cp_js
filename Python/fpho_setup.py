@@ -541,7 +541,13 @@ def plot_isosbestic_norm(fpho_dataframe, output_filename):
         del normDataRed[-n:]
 
     # Plot the data for green
-    plt.plot(f1GreenTime, normDataGreen)
+    plt.plot(f1GreenTime, normDataGreen, color='g')
+    # Remove top and right borders
+    plt.gca().spines['right'].set_color('none')
+    plt.gca().spines['top'].set_color('none')
+    # Add axes labels and a title
+    plt.xlabel('Time')
+    plt.ylabel('Normalized Fluorescence')
     plt.title('Green Normalized to Isosbestic')
 
     # Save the plot in a png file
@@ -550,7 +556,13 @@ def plot_isosbestic_norm(fpho_dataframe, output_filename):
     plt.close(figGreen)
 
     # Plot the data for red
-    plt.plot(f1RedTime, normDataRed)
+    plt.plot(f1RedTime, normDataRed, color='r')
+    # Remove top and right borders
+    plt.gca().spines['right'].set_color('none')
+    plt.gca().spines['top'].set_color('none')
+    # Add axes labels and a title
+    plt.xlabel('Time')
+    plt.ylabel('Normalized Fluorescence')
     plt.title('Red Normalized to Isosbestic')
 
     # Save the plot in a png file
@@ -678,8 +690,12 @@ def plot_fitted_exp(fpho_dataframe, output_filename):
     fitRed = fit_exp(timeR, AR, BR, CR, DR)
 
     # Plot the data for green
-    plt.plot(timeG, f1GreenGreen)
-    plt.plot(timeG, fitGreen)
+    plt.plot(timeG, f1GreenGreen, color='g')
+    plt.plot(timeG, fitGreen, color='k')
+    # Remove top and right borders
+    plt.gca().spines['right'].set_color('none')
+    plt.gca().spines['top'].set_color('none')
+    # Add axes labels and a title
     plt.xlabel('Time')
     plt.ylabel('Fluorescence')
     plt.title('Green Normalized to Exponential')
@@ -690,8 +706,12 @@ def plot_fitted_exp(fpho_dataframe, output_filename):
     plt.close(figGreen)
 
     # Plot the data for red
-    plt.plot(timeR, f1RedRed)
-    plt.plot(timeR, fitRed)
+    plt.plot(timeR, f1RedRed, color='r')
+    plt.plot(timeR, fitRed, color='k')
+    # Remove top and right borders
+    plt.gca().spines['right'].set_color('none')
+    plt.gca().spines['top'].set_color('none')
+    # Add axes labels and a title
     plt.xlabel('Time')
     plt.ylabel('Fluorescence')
     plt.title('Red Normalized to Exponential')
