@@ -1,8 +1,11 @@
-"""This file runs the functions in the fpho_setup library """
+"""This file runs the functions in the fpho_setup library
+   and was written specifically for functional testing in
+   test_fpho_driver.sh"""
 
 import argparse
 import sys
 import fpho_setup
+
 
 def main():
     """Runs functions in fpho_setup, asks for what analysis to perform
@@ -17,29 +20,34 @@ def main():
             file path if different than current file
 
     animal_ID: int
-               Number of the animal corresponding to fluoresence data
+            Number of the animal corresponding to fluoresence data
 
     exp_date: YYYY-MM-DD
-              Date of exp/date data was gathered
+            Date of exp/date data was gathered
 
     exp_desc: string
-              Brief explantation of experiment/what
-              type of information data contains
+            Brief explantation of experiment/what
+            type of information data contains
 
     plot_raw_signal: boolean
-                     optional plot of raw data for a
-                     particular fiber and color
+            optional plot of raw data for a
+            particular fiber
 
     plot_iso_fit: boolean
-                  optional isosbestic plot
+            optional isosbestic plot
 
     plot_fit_exp: boolean
-                  optional fitted exponent plot
+            optional fitted exponent plot
 
     Returns
     -------
     Pandas dataframe of parsed fiber photometry data
-    Writes an output CSV to specified file name
+
+    Optional output:
+        - Excel file of dataframe (.xlsx)
+        - Raw signal plot (.png)
+        - Isobestic plot (.png)
+        - Fitted exponent plot (.png)
     """
     # use with config.txt
     # run bash command: python fpho_driver.py @config.txt
@@ -77,7 +85,7 @@ def main():
                         type=int,
                         default=None,
                         required=False,
-                        help='column index of f1green')                        
+                        help='column index of f1green')
 
     parser.add_argument('--animal_ID',
                         dest='animal_ID',
@@ -131,12 +139,11 @@ def main():
                                           exp_date=args.exp_date,
                                           exp_desc=args.exp_desc)
 
-    # Plot raw signal if specified in commandline
+    # Plot raw signal if specified in command line
     if args.plot_raw_signal:
         sys.stdin = open("Python/fpho_ftest_driver_input.txt")
         fpho_setup.raw_signal_trace(fpho_dataframe=fpho_df,
                                     output_filename=args.output_filename)
-        
 
     # Prints isosbestic fit if specified
     if args.plot_iso_fit:

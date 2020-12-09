@@ -89,7 +89,7 @@ def import_fpho_data(input_filename, output_filename,
     else:
         f2greencol = f2greencol
 
-    # Catch error: number of fibers not integer
+    # Catch error: number of fibers not in integer form
     try:
         n_fibers = int(n_fibers)
     except ValueError:
