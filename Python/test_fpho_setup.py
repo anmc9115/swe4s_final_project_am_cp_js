@@ -14,7 +14,7 @@ from os import path
 
 class TestFphoSetup(unittest.TestCase):
 
-    # Test accuracy of expected out 
+    # Test accuracy of expected out
     def test_import_fpho_data(self):
         df = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                          '/1FiberTesting.csv',
