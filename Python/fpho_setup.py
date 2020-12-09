@@ -346,7 +346,7 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
     fpho_dataframe: pandas dataframe
                     contains parsed fiberphotometry data
     output_filename: string
-                    output png name
+                     output png name
     data_row_index: optional integer
                     row containing data to plot
 
@@ -373,9 +373,18 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
     else:
         channel_list = channel_input.split(' ')
 
+    # Put characters in cases that match input df
+    for i in range(0, len(channel_list)):
+        channel = channel_list[i]
+        channel = channel.lower()
+        channel = channel[:2] + channel[2].upper() + channel[3:]
+        channel_list[i] = channel
+
     # quick for loop to catch input error -- input not found in column names
     for channel in channel_list:
+        # Is channel name in any column name? col = T/F array
         col = df.columns.str.contains(pat=str(channel))
+        # If no T in col, print error and exit
         if not any(col):
             print("Could not find entries for channels you'd like to plot"
                   + " in the dataframe column names."
@@ -384,7 +393,7 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
             print('Please restart...\n')
             sys.exit(1)
 
-    # Replace user input with actual column name
+    # Loop to replace user input with actual column name
     for channel in channel_list:
 
         if 'f1Red' in str(channel):
@@ -404,20 +413,26 @@ def raw_signal_trace(fpho_dataframe, output_filename, data_row_index=0):
             time_col = 'fTimeGreen'
             l_color = "g"
 
+        # Initiate figure - size based on # of channels to plot
         fig = plt.figure(figsize=(7*len(channels), 6),
                          facecolor='w',
                          edgecolor='k',
                          dpi=300)
 
+        # Loop to add each channel to subplot
         for i in range(0, len(channels)):
 
             channel_data = df[channels[i]].values[data_row_index]
             time_data = df[time_col].values[data_row_index]
 
-            # Initialize plot, add data and title
+            # Initialize subplot, add data and title
             ax = fig.add_subplot(1, len(channels), 1+i)
             ax.plot(time_data, channel_data, color=l_color)
             ax.set_title(str(channels[i]))
+
+            # Add axis labels
+            plt.xlabel("time (s)")
+            plt.ylabel("Channel signal")
 
             # Remove top and right borders
             plt.gca().spines['right'].set_color('none')
