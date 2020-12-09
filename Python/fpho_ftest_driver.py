@@ -133,20 +133,20 @@ def main():
 
     # Plot raw signal if specified in commandline
     if args.plot_raw_signal:
-        sys.stdin = open("Python/ftests_fpho_setup.txt")
+        sys.stdin = open("Python/fpho_ftest_driver_input.txt")
         fpho_setup.raw_signal_trace(fpho_dataframe=fpho_df,
                                     output_filename=args.output_filename)
         
 
     # Prints isosbestic fit if specified
     if args.plot_iso_fit:
-        sys.stdin = open("Python/ftests_fpho_setup.txt")
+        sys.stdin = open("Python/fpho_ftest_driver_input.txt")
         fpho_setup.plot_isosbestic_norm(fpho_dataframe=fpho_df,
                                         output_filename=args.output_filename)
 
     # Prints fitted exponent if specified
     if args.plot_fit_exp:
-        sys.stdin = open("Python/ftests_fpho_setup.txt")
+        sys.stdin = open("Python/fpho_ftest_driver_input.txt")
         fpho_setup.plot_fitted_exp(fpho_dataframe=fpho_df,
                                    output_filename=args.output_filename)
 
