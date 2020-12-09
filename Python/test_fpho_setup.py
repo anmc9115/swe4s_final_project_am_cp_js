@@ -1,6 +1,6 @@
 """Performs unit tests on the functions in fpho_setup.py
 
-    These functions are: 
+    These functions are:
         import_fpho_data(), raw_signal_trace(), fit_exp(),
         plot_isosbestic_norm(), and plot_fitted_exp().
 
@@ -62,7 +62,7 @@ class TestFphoSetup(unittest.TestCase):
 
     # Checking that the correct file is created from running
     # raw_signal_trace() - Must use a correct user
-    # input for raw_signal_trace() - (f1Red, f2Red, f1Green, and/or f2Green) 
+    # input for raw_signal_trace() - (f1Red, f2Red, f1Green, and/or f2Green)
     def test_raw_signal_trace(self):
         df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                               '/1FiberTesting.csv',
