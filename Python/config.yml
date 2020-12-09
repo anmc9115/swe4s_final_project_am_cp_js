@@ -3,10 +3,9 @@
 # When complete, run this file by entering the following 
 # command into the terminal:
 # python fpho_config.py --config config.yml
-# Follow instructions in the terminal
 # ----------------------------------------------------------
 
-# REQUIRED FIBERPHO INPUTS ---------------------------------
+# REQUIRED INPUTS ------------------------------------------
 #  Name/file path for file containing fiberpho data from Bonsai (string)
 input_filename: "SynchronyData/FiberPhoSig2020-10-12T15_30_41.csv"
 
@@ -32,7 +31,7 @@ exp_date: "2020-11-22"
 # Brief explantation of experiment (string)
 exp_desc: "my experiment was about ..."
 
-# Write excel file that is easy to read in spreadsheet? (Bool)
+# To write an excel file of fiberpho data, set True (otherwise False)
 write_xlsx: False
 
 # To plot the raw signal trace, set True (otherwise False)
@@ -52,10 +51,10 @@ plot_fit_exp: False
 # To import behavior data, set True (otherwise False)
 import_behavior: False
 
-# Name of BORIS file containing behavior data
+# Name/file path of BORIS file containing behavior data (string)
 BORIS_file:
 
-# Name of timestamp file corresponding to behavior video
+# Name/file path of timestamp file corresponding to video (string)
 timestamp_file:
 
 # To plot the z-score analysis, set True (otherwise False)
