@@ -14,6 +14,7 @@ from os import path
 
 class TestFphoSetup(unittest.TestCase):
 
+    # Test accuracy of expected out 
     def test_import_fpho_data(self):
         df = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                          '/1FiberTesting.csv',
@@ -34,6 +35,7 @@ class TestFphoSetup(unittest.TestCase):
         test_red_iso = [1536.2730469085, 1536.54499614098]
         self.assertEqual(df['f1RedIso'].values[0], test_red_iso)
 
+    # Test exit code with bad input file
     def test_import_fpho_data_errors(self):
         with self.assertRaises(SystemExit) as cm:
             fpho_setup.import_fpho_data(input_filename='TestData/1Fdlkjf',
@@ -46,6 +48,7 @@ class TestFphoSetup(unittest.TestCase):
                                         write_xlsx=False)
         self.assertEqual(cm.exception.code, 1)
 
+    # Test accuracy of fitted exponent output
     def test_fit_exp(self):
         fit = fpho_setup.fit_exp([0, 0, 0, 0, 0], 1, 1, 1, 1)
         self.assertEqual(2.0, fit[0])
@@ -55,6 +58,7 @@ class TestFphoSetup(unittest.TestCase):
         self.assertEqual(0.7357588823428847, fit[0])
         self.assertEqual(9.079985952496971e-05, fit[3])
 
+    # Test for output file from raw signal
     def test_raw_signal_trace(self):
         df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                               '/1FiberTesting.csv',
@@ -71,6 +75,7 @@ class TestFphoSetup(unittest.TestCase):
                                     data_row_index=0)
         self.assertTrue(path.exists('testing_unit_RawSignal_f1Red.png'))
 
+    # Test bad channel input for raw signal
     def test_raw_signal_trace_errors(self):
         df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                               '/1FiberTesting.csv',
@@ -88,6 +93,7 @@ class TestFphoSetup(unittest.TestCase):
                                         data_row_index=0)
         self.assertEqual(cm.exception.code, 1)
 
+    # Test for output plot from plots iso
     def test_plot_isosbestic_norm(self):
         df_test = fpho_setup.import_fpho_data(input_filename='Python/TestData'
                                               '/1FiberTesting.csv',
@@ -103,6 +109,7 @@ class TestFphoSetup(unittest.TestCase):
         self.assertTrue(path.exists('my_file_name_f1GreenNormIso.png'))
         self.assertTrue(path.exists('my_file_name_f1RedNormIso.png'))
 
+    # Test for output plots from fitted exp
     def test_plot_fitted_exp(self):
         df_test = fpho_setup.import_fpho_data(input_filename='Python/'
                                               'SampleData/1fiberSignal.csv',
