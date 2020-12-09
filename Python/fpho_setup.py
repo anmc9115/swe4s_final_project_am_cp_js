@@ -698,7 +698,7 @@ def plot_fitted_exp(fpho_dataframe, output_filename):
     # Add axes labels and a title
     plt.xlabel('Time')
     plt.ylabel('Fluorescence')
-    plt.title('Green Normalized to Exponential')
+    plt.title('Green Fitted to Exponential')
 
     # Save the plot in a png file
     green_exp_plot_name = output_filename + '_f1GreenNormExp.png'
@@ -714,7 +714,7 @@ def plot_fitted_exp(fpho_dataframe, output_filename):
     # Add axes labels and a title
     plt.xlabel('Time')
     plt.ylabel('Fluorescence')
-    plt.title('Red Normalized to Exponential')
+    plt.title('Red Fitted to Exponential')
 
     # Save the plot in a png file
     red_exp_plot_name = output_filename + '_f1RedNormExp.png'
