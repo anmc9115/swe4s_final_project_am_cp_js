@@ -283,9 +283,9 @@ def import_fpho_data(input_filename, output_filename,
         twofiber_fdata = pd.DataFrame.from_dict(twofiber_dict)
 
         # Dataframe to output csv
-        output_csv = output_filename + '_Summary.csv'
-        twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
-        print('Output CSV written to ' + output_csv)
+#         output_csv = output_filename + '_Summary.csv'
+#         twofiber_fdata.to_csv(output_csv, index=None, na_rep='')
+#         print('Output CSV written to ' + output_csv)
 
         if write_xlsx is True:
             output_xlsx = output_filename + '_Summary.xlsx'
@@ -327,9 +327,9 @@ def import_fpho_data(input_filename, output_filename,
         print(onefiber_fdata)
 
         # Dataframe to output csv
-        output_csv = output_filename + '_Summary.csv'
-        onefiber_fdata.to_csv(output_csv, index=False)
-        print('Output CSV written to ' + output_csv)
+#         output_csv = output_filename + '_Summary.csv'
+#         onefiber_fdata.to_csv(output_csv, index=False)
+#         print('Output CSV written to ' + output_csv)
 
         if write_xlsx is True:
             output_xlsx = output_filename + '_Summary.xlsx'
