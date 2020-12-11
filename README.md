@@ -23,10 +23,14 @@ conda env create -f environment.yml
 2. If analyzing behavior, score behavior using BORIS with the events recorded in `seconds`
 3. If analyzing behavior, download raw data from behavior scoring using BORIS by clicking: `observations -> export events -> tabular events -> select observations -> save as csv`
 4. Download all analysis software as described in the `Installation` section above
-5. Open and edit the `config.yml` file with the parameters specific to your experiment. You will need to edit this file each time you want to run the code.
-6. In the command line, run the following command to execute the code:
+5. Move into the Python subdirectory by typing the following command into a terminal window (only works relative to main directory)
+```sh
+cd Python
+```
+6. Open and edit the `config.yml` file with the parameters specific to your experiment. You will need to edit this file each time you want to run the code.
+7. In the command line, run the following command to execute the code:
       `python fpho_config.py --config config.yml`
-7. A summary excel file along with any plots from analysis will be output to the working directory.   
+8. A summary excel file along with any plots from analysis will be output to the working directory.   
 \* *See below for general file structure*
 
 ## Example Plots
