@@ -57,18 +57,23 @@ cd Python/
 * `Synchrony data`: Behavior data
 
 #### Files
+* Command line code is all relative to the Python subdirectory
 
 *Fiber photometry files*
 * `fpho_setup.py`: Library of functions used to parse and plot fiber photometry data
 * `fpho_config.py`: Runs functions in fpho_setup.py using config.yml
 * `config.yml`: File specifying positional arguments for all functions implemented in fpho_config.py
 
+```sh
+ python fpho_config.py --config config.yml
+```
+
 *Unit test files*
 * `test_fpho_setup.py`: Unit tests for functions in fpho_setup.py
 * `unittest_fpho_setup.txt`: File that provides user input to unit tests. 
 
 ```sh
- python Python/test_fpho_setup.py < Python/unittest_fpho_setup.txt
+ python test_fpho_setup.py < unittest_fpho_setup.txt
 ```
 
 *Functional test files*
@@ -76,7 +81,7 @@ cd Python/
 * `fpho_ftest_driver.py`: File used to test functionality of fpho_setup.py functions in command line using Stupid Simple bash testing framework. Used by repository's software developers only.
 * `fpho_ftest_driver_input.txt`: Provides responses to prompted user inputs in functional test file fpho_ftest_driver.py.
 ```sh
-bash Python/test_fpho_driver.sh
+bash test_fpho_driver.sh
 ```
 
 *Behavior files (In development)*
