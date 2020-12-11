@@ -3,12 +3,12 @@
 
 In order to use this code you must have collected fiberphotometry data using `Bonsai` and behavior data using the behavior coding software `BORIS` (https://boris.readthedocs.io/en/latest/#behavioral-observation-research-interactive-software-boris-user-guide). 
 
-### Note: this software is currenlty optimized for GcAMP (or other green fluorophores)
+### Note: this software is currently optimized for GcAMP (or other green fluorophores)
 
 
 ## Installation
 
-Open a terminal and navigate to the working directory where you would like to store and use this software. Run the following command to download the code from this repository into that directory. 
+Open a terminal and navigate to the working directory where you would like to store and use this software. Run the following command to download code from this repository into that directory. 
 
 ```sh
 git clone https://github.com/anmc9115/swe4s_final_project_am_cp_js.git
