@@ -30,7 +30,7 @@ conda env create -f environment.yml
 
 ## Example Plots
 ### Raw Signal Trace
-<center><img src="Python/ExamplePlots/Ex_RawSig.png" width="500"/></center>
+<center><img src="Python/ExamplePlots/Ex_RawSig.png" width="600"/></center>
 
 ### Normalized Signal to Isosbestic
 <center><img src="Python/ExamplePlots/Ex_NormIso.png" width="300"/></center>
