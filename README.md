@@ -26,8 +26,8 @@ conda env create -f environment.yml
 5. Open and edit the `config.yml` file with the parameters specific to your experiment. You will need to edit this file each time you want to run the code.
 6. In the command line, run the following command to execute the code:
       `python fpho_config.py --config config.yml`
-7. A summary excel file along with any plots from analysis will be output to the working directory.
-** See below for general file structure
+7. A summary excel file along with any plots from analysis will be output to the working directory.   
+'* See below for general file structure
 
 ## Example Plots
 ### Raw Signal Trace
