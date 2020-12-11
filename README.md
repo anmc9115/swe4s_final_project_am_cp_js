@@ -27,7 +27,7 @@ conda env create -f environment.yml
 6. In the command line, run the following command to execute the code:
       `python fpho_config.py --config config.yml`
 7. A summary excel file along with any plots from analysis will be output to the working directory.   
-* See below for general file structure
+\* See below for general file structure
 
 ## Example Plots
 ### Raw Signal Trace
