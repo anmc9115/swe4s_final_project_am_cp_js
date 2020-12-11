@@ -3,7 +3,7 @@
 
 In order to use this code you must have collected fiberphotometry data using `Bonsai` and behavior data using the behavior coding software `BORIS` (https://boris.readthedocs.io/en/latest/#behavioral-observation-research-interactive-software-boris-user-guide). 
 
-### Note: this software is currenlty optimized for GcAMP (or other green fluoraphores)
+### Note: this software is currenlty optimized for GcAMP (or other green fluorophores)
 
 
 ## Installation
