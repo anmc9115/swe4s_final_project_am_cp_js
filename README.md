@@ -40,6 +40,13 @@ conda env create -f environment.yml
 <center><img src="Python/ExamplePlots/Ex_NormExp.png" width="300"/></center>
 
 ## File Structure
+### Main directory
+* .travis.yml: File that allows continuous integration through Travis-CI.com   
+* Environment.yml: Used to set up environment on user computer   
+#### Python
+
+#### Matlab
+* Analyses were originally developed in MATLAB and was then converted to Python. MATLABs are no longer in use. 
 
 ## Release History
 
