@@ -45,14 +45,14 @@ conda env create -f environment.yml
 * .travis.yml: File that allows continuous integration through Travis-CI.com   
 * Environment.yml: Used to set up environment on user computer  
 
-#### Python
-##### Folders
+### Python subdirectory
+#### Folders
 * **ExamplePlots**: Example output PNGs from plotting functions
 * **SampleData**: Input fiber photometry and behavior data examples
 * **TestData**: Data file used for unit tests
 * **Synchrony data**: Behavior data
 
-##### Files
+#### Files
 
 *Fiber photometry files*
 * **fpho_setup.py**: Library of functions used to parse and plot fiber photometry data
@@ -81,7 +81,7 @@ bash Python/test_fpho_driver.sh
 *Old files--No longer in use*
 * **fpho_driver_old.py**: This file became fpho_config.py. Kept for reference.
 
-#### Matlab
+### Matlab subdirectory
 * Analyses were originally developed in MATLAB and was then converted to Python. MATLAB files are no longer in use, and as such will not be listed here. 
 
 ## Release History
