@@ -25,7 +25,7 @@ conda env create -f environment.yml
 4. Download all analysis software as described in the `Installation` section above
 5. Move into the Python subdirectory by typing the following command into a terminal window (only works relative to main directory)
 ```sh
-cd Python
+cd Python/
 ```
 6. Open and edit the `config.yml` file with the parameters specific to your experiment. You will need to edit this file each time you want to run the code.
 7. In the command line, run the following command to execute the code:
