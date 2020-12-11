@@ -46,44 +46,44 @@ cd Python/
 ## File Structure
 
 ### Main directory
-* .travis.yml: File that allows continuous integration through Travis-CI.com   
-* Environment.yml: Used to set up environment on user computer  
+* `.travis.yml`: File that allows continuous integration through Travis-CI.com   
+* `Environment.yml`: Used to set up environment on user computer  
 
 ### Python subdirectory
 #### Folders
-* **ExamplePlots**: Example output PNGs from plotting functions
-* **SampleData**: Input fiber photometry and behavior data examples
-* **TestData**: Data file used for unit tests
-* **Synchrony data**: Behavior data
+* `ExamplePlots`: Example output PNGs from plotting functions
+* `SampleData`: Input fiber photometry and behavior data examples
+* `TestData`: Data file used for unit tests
+* `Synchrony data*`: Behavior data
 
 #### Files
 
 *Fiber photometry files*
-* **fpho_setup.py**: Library of functions used to parse and plot fiber photometry data
-* **fpho_config.py**: Runs functions in fpho_setup.py using config.yml
-* **config.yml**: File specifying positional arguments for all functions implemented in fpho_config.py
+* `fpho_setup.py`: Library of functions used to parse and plot fiber photometry data
+* `fpho_config.py`: Runs functions in fpho_setup.py using config.yml
+* `config.yml`: File specifying positional arguments for all functions implemented in fpho_config.py
 
 *Unit test files*
-* **test_fpho_setup.py**: Unit tests for functions in fpho_setup.py
-* **unittest_fpho_setup.txt**: File that provides user input to unit tests. 
+* `test_fpho_setup.py`: Unit tests for functions in fpho_setup.py
+* `unittest_fpho_setup.txt`: File that provides user input to unit tests. 
 
 ```sh
  python Python/test_fpho_setup.py < Python/unittest_fpho_setup.txt
 ```
 
 *Functional test files*
-* **test_fpho_driver.sh**: Functional tests for functions in fpho_setup.py using Stupid Simple bash testing framework
-* **fpho_ftest_driver.py**: File used to test functionality of fpho_setup.py functions in command line using Stupid Simple bash testing framework. Used by repository's software developers only.
-* **fpho_ftest_driver_input.txt**: Provides responses to prompted user inputs in functional test file fpho_ftest_driver.py.
+* `test_fpho_driver.sh`: Functional tests for functions in fpho_setup.py using Stupid Simple bash testing framework
+* `fpho_ftest_driver.py`: File used to test functionality of fpho_setup.py functions in command line using Stupid Simple bash testing framework. Used by repository's software developers only.
+* `fpho_ftest_driver_input.txt`: Provides responses to prompted user inputs in functional test file fpho_ftest_driver.py.
 ```sh
 bash Python/test_fpho_driver.sh
 ```
 
 *Behavior files (In development)*
-* **behavior_setup.py**: Library of functions to import, parse, analyse, and plot behavior data.
+* `behavior_setup.py`: Library of functions to import, parse, analyse, and plot behavior data.
 
 *Old files--No longer in use*
-* **fpho_driver_old.py**: This file became fpho_config.py. Kept for reference.
+* `fpho_driver_old.py`: This file became fpho_config.py. Kept for reference.
 
 ### Matlab subdirectory
 * Analyses were originally developed in MATLAB and was then converted to Python. MATLAB files are no longer in use, and as such will not be listed here. 
