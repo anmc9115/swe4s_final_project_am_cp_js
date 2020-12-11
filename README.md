@@ -68,7 +68,7 @@ cd Python
 * **unittest_fpho_setup.txt**: File that provides user input to unit tests. 
 
 ```sh
-python Python/test_fpho_setup.py < Python/unittest_fpho_setup.txt
+ python Python/test_fpho_setup.py < Python/unittest_fpho_setup.txt
 ```
 
 *Functional test files*
