@@ -54,7 +54,7 @@ cd Python/
 * `ExamplePlots`: Example output PNGs from plotting functions
 * `SampleData`: Input fiber photometry and behavior data examples
 * `TestData`: Data file used for unit tests
-* `Synchrony data*`: Behavior data
+* `Synchrony data`: Behavior data
 
 #### Files
 
